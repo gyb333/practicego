@@ -1,0 +1,38 @@
+Kettle资源库 admin admin
+
+/etc/profile 	配置KettleHome变量
+
+设置kettle.properties 需要重启才能启用
+
+Kettle通过Carte远程调度
+Kettle的部署有很多种模式，上面讲的是最原生的模式（Pan/Kitchen）。但是这种方式不利于监控、调度和资源分配。
+Kettle本身提供了一个用于调度的Web服务Carte。Carte允许远程请求HTTP进行监控、启动、停止在Carte服务上运行的job和trans。
+1.修改xml配置文件
+在kettle.pwd的描述中可以知道默认的用户名密码都是cluster（可以通过<username>和<password>节点设置用户名密码）
+如果要修改密码可以在配置文件中配置。
+<slave_config>
+  <slaveserver>
+    <name>master1</name>
+    <hostname>Hadoop</hostname>
+    <port>9191</port>
+    <master>Y</master>
+  </slaveserver>
+</slave_config>
+
+2.启动Carte：启动时将刚刚的配置文件加上
+nohup carte.sh pwd/carte-config-master-8080.xml 1>carte.log 2>&1 &
+http://hadoop:9191/kettle/status/
+
+3.配置子服务器
+将Carte服务打开，Spoon连接到Carte。在左侧的树中我们需要增加一个子服务器
+
+4.创建一个新的运行配置，setting选择Slave Server
+
+5）提交任务
+运行时选择刚刚配置的Carte执行。这样我们执行文件就会上传到Carte服务器指定的目录然后执行
+1.文件模式远程执行：
+    curl -u "root:root" "http://Hadoop:9191/kettle/executeJob/?job=./jobs/job.kjb&ETLId=1&args=test"
+
+2.资源库模式远程执行：
+    curl -u "root:root" "http://Hadoop:9191/kettle/executeJob/?rep=kettleReposity&user=admin&pass=admin&job=/job&ETLId=1&args=test"
+

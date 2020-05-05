@@ -1,0 +1,170 @@
+访问一个网页: curl www.baidu.com
+curl -o tt.html www.baidu.com
+
+显示响应的头信息:curl -i www.baidu.com
+
+显示一次HTTP请求的通信过程:curl -v www.baidu.com
+
+执行GET/POST/PUT/DELETE操作:curl -X GET/POST/PUT/DELETE url
+
+
+docker-compose ps
+docker-compose config  -q
+docker-compose up | down
+
+docker-compose exec nginx bash
+
+安装中文分词器:https://github.com/medcl/elasticsearch-analysis-ik
+docker cp elasticsearch-analysis-ik-6.5.4.zip esMaster:/usr/share/elasticsearch/plugins
+docker exec -it elasticsearch /bin/bash
+mkdir /usr/share/elasticsearch/plugins/ik
+mv elasticsearch-analysis-ik-6.5.4.zip ik
+unzip elasticsearch-analysis-ik-6.5.4.zip
+rm -rf elasticsearch-analysis-ik-6.5.4.zip
+以此类推 esSecond esSlave
+docker-compose restart|stop
+
+
+curl -XGET -H 'Content-Type: application/json' 'http://hadoop:9200/_analyze?pretty' -d '{"analyzer" : "ik_max_word","text": "中华人民共和国国歌"}'
+curl -XPOST -H 'Content-Type: application/json' 'http://hadoop:9200/_analyze?pretty' -d '{"analyzer" : "ik_smart","text": "中华人民共和国国歌"}'
+
+
+require github.com/elastic/go-elasticsearch/v7 7.x
+go get -u github.com/elastic/go-elasticsearch
+
+
+go get github.com/olivere/elastic
+github.com/olivere/elastic/v7
+
+查看当前节点的所有 Index: curl -X GET 'http://hadoop:9200/_cat/indices?v'
+        curl -XGET 'http://hadoop:9200/_cat/health?v'
+列出每个 Index 所包含的 Type: curl  'http://hadoop:9200/_mapping?pretty=true'
+
+新建和删除 Index:
+    curl -X PUT 'hadoop:9200/weather'
+    curl -X DELETE 'localhost:9200/weather'
+
+
+curl -X PUT -H 'Content-Type: application/json' 'hadoop:9200/accounts' -d '
+{
+  "mappings": {
+    "person": {
+      "properties": {
+        "user": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "title": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        },
+        "desc": {
+          "type": "text",
+          "analyzer": "ik_max_word",
+          "search_analyzer": "ik_max_word"
+        }
+      }
+    }
+  }
+}'
+数据操作:
+ 新增记录:
+ 指定 Id为1:curl -X PUT -H 'Content-Type: application/json' 'hadoop:9200/accounts/person/1' -d '
+     {
+       "user": "张三",
+       "title": "工程师",
+       "desc": "数据库管理"
+     }'
+    curl -X POST -H 'Content-Type: application/json' 'hadoop:9200/accounts/person' -d '
+         {
+           "user": "李四",
+           "title": "工程师",
+           "desc": "系统管理"
+         }'
+ 查看记录:curl 'hadoop:9200/accounts/person/1?pretty=true'
+ 删除记录:curl -X DELETE 'hadoop:9200/accounts/person/1'
+ 更新记录:curl -X PUT -H 'Content-Type: application/json' 'hadoop:9200/accounts/person/1' -d '
+      {
+          "user" : "张三",
+          "title" : "工程师",
+          "desc" : "数据库管理，软件开发"
+      }'
+
+数据查询:
+    返回所有记录:curl 'hadoop:9200/accounts/person/_search'
+
+
+全文搜索:
+    curl -H 'Content-Type: application/json' 'hadoop:9200/accounts/person/_search'  -d '
+     {
+       "query" : { "match" : { "desc" : "软件" }},
+       "from": 1,
+       "size": 1
+     }'
+如果有多个搜索关键字， Elastic 认为它们是or关系:
+    curl -H 'Content-Type: application/json' 'hadoop:9200/accounts/person/_search'  -d '
+    {
+      "query" : { "match" : { "desc" : "软件 系统" }}
+    }'
+如果要执行多个关键词的and搜索，必须使用布尔查询:
+curl -H 'Content-Type: application/json' 'hadoop:9200/accounts/person/_search'  -d '
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "desc": "软件" } },
+        { "match": { "desc": "管理" } }
+      ]
+    }
+  }
+}'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(1)核心数据类型（Core datatypes）
+字符型：string，string类型包括
+text 和 keyword
+
+text类型被用来索引长文本，在建立索引前会将这些文本进行分词，转化为词的组合，建立索引。允许es来检索这些词语。text类型不能用来排序和聚合。
+
+Keyword类型不需要进行分词，可以被用来检索过滤、排序和聚合。keyword 类型字段只能用本身来进行检索
+
+数字型：long, integer, short, byte, double, float
+日期型：date
+布尔型：boolean
+二进制型：binary
+(2)复杂数据类型（Complex datatypes）
+数组类型（Array datatype）：数组类型不需要专门指定数组元素的type，例如：
+    字符型数组: [ "one", "two" ]
+    整型数组：[ 1, 2 ]
+    数组型数组：[ 1, [ 2, 3 ]] 等价于[ 1, 2, 3 ]
+    对象数组：[ { "name": "Mary", "age": 12 }, { "name": "John", "age": 10 }]
+对象类型（Object datatype）：_ object _ 用于单个JSON对象；
+嵌套类型（Nested datatype）：_ nested _ 用于JSON数组；
+(3)地理位置类型（Geo datatypes）
+地理坐标类型（Geo-point datatype）：_ geo_point _ 用于经纬度坐标；
+地理形状类型（Geo-Shape datatype）：_ geo_shape _ 用于类似于多边形的复杂形状；
+(4)特定类型（Specialised datatypes）
+IPv4 类型（IPv4 datatype）：_ ip _ 用于IPv4 地址；
+Completion 类型（Completion datatype）：_ completion _提供自动补全建议；
+Token count 类型（Token count datatype）：_ token_count _ 用于统计做了标记的字段的index数目，该值会一直增加，不会因为过滤条件而减少。
+mapper-murmur3
+类型：通过插件，可以通过 _ murmur3 _ 来计算 index 的 hash 值；
+附加类型（Attachment datatype）：采用 mapper-attachments
+插件，可支持_ attachments _ 索引，例如 Microsoft Office 格式，Open Document 格式，ePub, HTML 等。
+

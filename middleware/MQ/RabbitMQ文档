@@ -1,0 +1,88 @@
+启动服务：systemctl start rabbitmq-server.service
+设置开机启动：systemctl enable rabbitmq-server.service
+停止开机启动：systemctl disable rabbitmq-server.service
+重新启动服务：systemctl restart rabbitmq-server.service
+查看服务当前状态：systemctl status rabbitmq-server.service
+查看所有已启动服务：systemctl list-units --type=service
+
+docker search rabbitmq
+docker pull rabbitmq
+docker run -dit --name RabbitMQ -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin -p 15672:15672 -p 5672:5672 rabbitmq
+
+
+查看RabbitMQ状态
+rabbitmqctl status
+添加用户赋予管理员权限
+rabbitmqctl  add_user  username  sz.12345
+rabbitmqctl  set_user_tags  username  administrator
+查看用户列表
+rabbitmqctl list_users
+删除用户
+rabbitmqctl delete_user username
+修改用户密码
+rabbitmqctl oldPassword username newPassword
+
+AMQP协议模型
+    1.生产者生产的消息通过Server->Virtual Host->Exchange
+    2.Exchange和Queue之间进行绑定
+    3.消费者只需要监听Queue消息队列即可
+
+    生产者只需要将消息发送到Exchange即可
+    消费者只需要监听对应的消息队列即可
+    Exchange绑定多个Queue时, 要通过Routing Key进行路由
+
+消息可靠性投递:
+    1.消息落库, 对消息状态进行标记:
+        将消息落入数据库中, 对消息状态进行标记, 消息状态发生变更时, 更新标记信息
+        对失败消息进行轮询重发, 设置轮询次数
+
+    2.消息的延迟投递, 做二次确认, 回调检查
+
+消费端-幂等性保障:多次执行, 结果保持一致
+     唯一ID + 指纹码机制, 利用数据库主键去重
+         好处 : 实现简单
+         坏处 : 高并发下有数据库写入的性能瓶颈
+         解决方案 : 根据ID进行分库分表进行算法路由
+
+     利用Redis的原子性实现
+         是否要进行数据落库, 如果落库的话, 数据库和缓存如何做到原子性
+         如果不落库, 数据都存储到缓存中, 如何设置定时同步的策略
+
+Confirm确认消息 Return消息机制
+
+消费端限流：Consumer设置Qos, 关闭自动签收
+
+消费端ACK与重回队列：
+    消费端重回队列是为了对没有处理成功的消息, 把消息重新回递给Broker;一般在实际应用中, 都会关闭重回队列, 也就是设置为False
+
+TTL队列/消息:延时消息或延时队列,配置"x-message-ttl"参数
+    导致后面的消息阻塞
+
+死信队列(DLX)：1.消息被拒绝(basic.reject/basic.nack) 并且requeue重回队列设置成false
+          2.消息TTL过期
+          3.队列达到最大长度
+
+         死信队列的设置 :首先要设置死信队列的exchange和queue, 然后进行绑定
+         Exchange : dlx.exchange
+         Queue : dlx.queue
+         RoutingKey : #
+         然后正常声明交换机, 队列, 绑定,
+         需要在队列加上一个扩展参数即可 : arguments.put(“x-dead-letter-exchange”, “dlx.exchange”);
+         这样消息在过期, reject或nack(requeue要设置成false), 队列在达到最大长度时, 消息就可以直接路由到死信队列
+
+
+延时队列：1.使用TTL + DLX创建延迟队列
+         2.安装延时x-delayed-message插件https://www.rabbitmq.com/community-plugins.html
+            rabbitmq-plugins list查看延迟插件是否存在
+            启动关闭插件：rabbitmq-plugins enable|disable rabbitmq_delayed_message_exchange
+
+            声明延时交换机时必须加上x-delayed-type参数，不然会报错。
+            args:=amqp.Table{
+            		"x-delayed-type":"topic",
+            	}
+            ch.ExchangeDeclare("delayed_exchange","x-delayed-message",true, false,false,false,args)
+
+            生产者发送消息的时候,需要添加headers.put("x-delay", 10000);
+
+         如果统一用队列来设置消息的TTL，当延时时间梯度比较多的话，比如1分钟，2分钟，5分钟，10分钟，20分钟，30分钟……需要创建很多交换机和队列来路由消息。
+         如果单独设置消息的TTL，则可能会造成队列中的消息阻塞——前一条消息没有出队（没有被消费），后面的消息无法投递。

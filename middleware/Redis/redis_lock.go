@@ -1,0 +1,107 @@
+package Redis
+
+import (
+	"github.com/garyburd/redigo/redis"
+		"fmt"
+	"log"
+	"time"
+)
+
+type Lock struct {
+	resource string
+	token    string
+	redis.Conn
+	timeout  int
+}
+
+func (lock *Lock) tryLock() (ok bool, err error) {
+	_, err = redis.String(
+		lock.Do("SET", lock.key(), lock.token, "EX", int(lock.timeout), "NX"))
+	if err == redis.ErrNil {
+		// The lock was not successful, it already exists.
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (lock *Lock) Unlock() (err error) {
+	_, err = lock.Do("del", lock.key())
+	return
+}
+
+func (lock *Lock) key() string {
+	return fmt.Sprintf("redislock:%s", lock.resource)
+}
+
+func (lock *Lock) AddTimeout(ex_time int64) (ok bool, err error) {
+	ttl_time, err := redis.Int64(lock.Do("TTL", lock.key()))
+	fmt.Println(ttl_time)
+	if err != nil {
+		log.Fatal("redis get failed:", err)
+	}
+	if ttl_time > 0 {
+		fmt.Println(11)
+		_, err := redis.String(lock.Do("SET", lock.key(), lock.token, "EX", int(ttl_time+ex_time)))
+		if err == redis.ErrNil {
+			return false, nil
+		}
+		if err != nil {
+			return false, err
+		}
+	}
+	return false, nil
+}
+
+func TryLock(conn redis.Conn, resource string, token string, DefaulTimeout int) (lock *Lock, ok bool, err error) {
+	return TryLockWithTimeout(conn, resource, token, DefaulTimeout)
+}
+
+func TryLockWithTimeout(conn redis.Conn, resource string, token string, timeout int) (lock *Lock, ok bool, err error) {
+	lock = &Lock{resource, token, conn, timeout}
+
+	ok, err = lock.tryLock()
+
+	if !ok || err != nil {
+		lock = nil
+	}
+
+	return
+}
+
+
+/*
+$ go run lock.go
+start
+10
+11
+end
+
+如果同时起多个进程去测试，会遇到这么一个结果:
+$ go run lock.go
+start
+2016/03/23 01:23:22 Lock
+exit status 1
+ */
+func main() {
+	fmt.Println("start")
+	DefaultTimeout := 10
+	conn, err := redis.Dial("tcp", "hadoop:6379")
+
+	lock, ok, err := TryLock(conn, "xiaoru.cc", "token", int(DefaultTimeout))
+	if err != nil {
+		log.Fatal("Error while attempting lock")
+	}
+	if !ok {
+		log.Fatal("Lock")
+	}
+	lock.AddTimeout(100)
+
+	time.Sleep(time.Duration(DefaultTimeout) * time.Second)
+	fmt.Println("end")
+	defer lock.Unlock()
+}
+
+

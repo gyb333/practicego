@@ -1,0 +1,34 @@
+select会监听IO操作，当IO操作发生时会触发相应的动作，
+如果没有发生符合条件的IO操作则执行default分支，如没有default分支则一直阻塞。
+select {
+    case <-chan:    //没有default分支则一直阻塞
+    default:
+        runtime.Gosched()   //释放cpu调度
+     }
+
+实现优先级队列：a->b->c
+a := make(chan int, 1)
+b := make(chan int, 1)
+c := make(chan int, 1)
+select {
+    case <-a:
+        fmt.Println("recv from a")
+    default:
+        select {
+            case <-b:
+                fmt.Println("recv from b")
+            default:
+                select {
+                    case <-c:
+                    fmt.Println("recv from c")
+                }
+        }
+}
+
+
+func main() {
+    defer func() {
+        recover()
+    }()
+    panic(1)
+}
