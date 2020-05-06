@@ -16,7 +16,6 @@ func init() {
 	model.MyUserDao = model.NewUserDao(pool)
 }
 
-
 func main() {
 	listen, err := net.Listen("tcp", ":8888")
 	if err != nil {
