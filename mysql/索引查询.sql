@@ -31,6 +31,7 @@ start transaction with consistent snapshot ;
 commit ;
 
 
+
 set long_query_time=0;
 select * from t where a between 10000 and 20000; /*Q1*/
 select * from t force index(a) where a between 10000 and 20000;/*Q2*/
@@ -47,5 +48,3 @@ explain select * from t where (a between 1 and 1000) and (b between 50000 and 10
 
 select * from t where (a between 1 and 1000) and (b between 50000 and 100000) order by b limit 1;
 select * from t force index(a) where (a between 1 and 1000) and (b between 50000 and 100000) order by b limit 1;
-
-

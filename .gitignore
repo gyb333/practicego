@@ -1,13 +1,7 @@
 
 .idea/dataSources.xml
-.idea/dataSources.xml
 .idea/dbnavigator.xml
-.idea/dataSources.xml
 .idea/sqldialects.xml
 .idea/sqlGenerator.xml
-.idea/dataSources.xml
-.idea/sqldialects.xml
-.idea/sqlGenerator.xml
-.idea/dataSources.xml
-*.xml
-*.xml
+
+
