@@ -21,6 +21,15 @@ end;;
 delimiter ;
 call idata();
 
+/*
+ "Using index condition":会查找使用了索引，但是需要回表查询数据
+ “Using index”：表示的就是使用了覆盖索引；
+ "Using where"：在查找使用索引的情况下，需要回表去查询所需的数据
+ using index & using where：查找使用了索引，但是需要的数据都在索引列中能找到，所以不需要回表查询数据
+ “Using filesort”：表示的就是需要排序，MySQL会给每个线程分配一块内存用于排序，称为sort_buffer。
+  Using temporary，表示的是需要使用临时表；
+ */
+
 explain select * from t where a between 10000 and 20000;#使用索引a
 
 #SESSION A                                      SESSION B

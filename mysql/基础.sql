@@ -1,4 +1,12 @@
 show processlist ;
+#开启慢查询日志
+show variables like 'slow_query%';
+show variables like 'long_query_time';
+
+set global slow_query_log='ON';
+set global slow_query_log_file='/var/lib/mysql/slow.log';
+set global long_query_time=0.1;#30ms
+
 
 create table T(ID int primary key, c int);
 update T set c=c+1 where ID=2;
