@@ -3,7 +3,7 @@
 如果你的事务中需要锁多个行，要把最可能造成锁冲突、最可能影响并发度的锁尽量往后放。
 在InnoDB中，innodb_lock_wait_timeout的默认值是50s，意味着如果采用第一个策略，当出现死锁以后，第一个被锁住的线程要过50s才会超时退出，然后其他线程才有可能继续执行。对于在线服务来说，这个等待时间往往是无法接受的。
  */
-
+show variables like 'innodb_lock_wait_timeout';
  /*
   如果你要删除一个表里面的前10000行数据，有以下三种方法可以做到：
     第一种，直接执行delete from T limit 10000;
@@ -85,11 +85,10 @@ CREATE TABLE td (
 truncate td;
 insert into td(id, c) values(1,1),(2,2),(3,3),(4,4);
 #数据无法修改 的场景
-#SESSION A                                                  #SESSION B                      #Session b
+#SESSION A                                                  #SESSION B                      #Session B
                                                                                             begin;
 begin ;
 select * from td;
-#select sleep(10);
                                                         update td set c=c+1;                update td set c=c+1;
 update td set c=0 where id =c;
                                                                                             commit ;#任意位置都行

@@ -1,3 +1,4 @@
+drop table if exists t;
 CREATE TABLE `t` (
                      `id` int(11) NOT NULL,
                      `c` int(11) DEFAULT NULL,
@@ -19,7 +20,7 @@ insert into t values(0,0,0),(5,5,5), (10,10,10),(15,15,15),(20,20,20),(25,25,25)
 
 #Session A                                          Session B                       Session C
 begin;
-Select * from t where d=5 for update;   #(5,5,5)
+Select * from t where d=5 for update;   #(5,5,5) 由于d做了全表扫描，导致整个表都被锁定了
                                         update t set d=5 where id=0;
 select * from t where d=5 for update;   #(0,0,5),(5,5,5)
                                                                         insert into t values (1,1,5);

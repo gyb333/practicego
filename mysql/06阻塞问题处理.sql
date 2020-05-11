@@ -100,7 +100,7 @@ select * from t where c=50000 limit 1; #坏查询不一定是慢查询。
 #Session A                                              Session B
 start transaction with consistent snapshot ;
                                             update t set c=c+1 where id=1;  #执行100万次
-select * from t where id=1;
+select * from t where id=1;#阻塞 因为数据版本要一一回退到快照版本
 select * from t where id=1 lock in share mode ;#当前读
 
 

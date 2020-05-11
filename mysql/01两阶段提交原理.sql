@@ -3,7 +3,8 @@
 
 一个事务的binlog是不能被拆开的，因此不论这个事务多大，也要确保一次性写入。这就涉及到了binlog cache的保存问题。
 
-系统给binlog cache分配了一片内存，每个线程一个，参数 binlog_cache_size用于控制单个线程内binlog cache所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。
+系统给binlog cache分配了一片内存，每个线程一个，参数 binlog_cache_size用于控制单个线程内binlog cache所占内存的大小。
+ 如果超过了这个参数规定的大小，就要暂存到磁盘。
 
 事务提交的时候，执行器把binlog cache里的完整事务写入到binlog中，并清空binlog cache。
 
@@ -30,7 +31,8 @@ binlog_group_commit_sync_delay参数，表示延迟多少微秒后才调用fsync
 binlog_group_commit_sync_no_delay_count参数，表示累积多少次以后才调用fsync。
 
  */
-
+show variables like 'binlog_group_commit_sync_delay';
+show variables like 'binlog_group_commit_sync_no_delay_count';
 /*
 redo log的写入机制:事务在执行过程中，生成的redo log是要先写到redo log buffer的。
     redo log buffer里面的内容，是不是每次生成后都要直接持久化到磁盘呢？不需要。
@@ -40,7 +42,7 @@ redo log的写入机制:事务在执行过程中，生成的redo log是要先写
 
 redo log可能存在的三种状态
     1.存在redo log buffer中，物理上是在MySQL进程内存中
-    2.写到磁盘(write)，但是没有持久化（fsync)，物理上是在文件系统的page cache里面，也就是图中的黄色部分；
+    2.写到磁盘(write)，但是没有持久化（fsync)，物理上是在文件系统的page cache里面；
     3.持久化到磁盘，对应的是hard disk
 日志写到redo log buffer是很快的，wirte到page cache也差不多，但是持久化到磁盘的速度就慢多了。
 
@@ -48,7 +50,9 @@ redo log可能存在的三种状态
     1.设置为0的时候，表示每次事务提交时都只是把redo log留在redo log buffer中;
     2.设置为1的时候，表示每次事务提交时都将redo log直接持久化到磁盘；
     3.设置为2的时候，表示每次事务提交时都只是把redo log写到page cache。
-
+*/
+show variables like 'innodb_flush_log_at_trx_commit';
+/*
 1.InnoDB有一个后台线程，每隔1秒，就会把redo log buffer中的日志，调用write写到文件系统的page cache，然后调用fsync持久化到磁盘。
 注意，事务执行中间过程的redo log也是直接写在redo log buffer中的，这些redo log也会被后台线程一起持久化到磁盘。
 也就是说，一个没有提交的事务的redo log，也是可能已经持久化到磁盘的。

@@ -36,13 +36,13 @@ func TestJsonStruct(t *testing.T)  {
 		[]byte(`{"status":200, "tag":"one"}`),
 		[]byte(`{"status":"ok", "tag":"two"}`),
 	}
+	var result struct {
+		StatusCode uint64
+		StatusName string
+		Status json.RawMessage `json:"status"`
+		Tag string `json:"tag"`
+	}
 	for idx, record := range records {
-		var result struct {
-			StatusCode uint64
-			StatusName string
-			Status json.RawMessage `json:"status"`
-			Tag string `json:"tag"`
-		}
 		err := json.NewDecoder(bytes.NewReader(record)).Decode(&result)
 		if err!=nil{
 			panic(err)

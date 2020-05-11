@@ -9,6 +9,7 @@
 将innodb_file_per_table设置为ON，是推荐做法，因为一个表单独存储为一个文件更容易管理，而且在删除表的时候，通过drop table命令，
 系统就会直接删除这个文件。而如果是放在共享表空间中，即使表删掉了，空间也是不会回收的。
  */
+show variables like 'innodb_file_per_table';
 select @@innodb_file_per_table;
 
 /*InnoDB的数据是按页存储的，那么如果我们删掉了一个数据页上的所有记录，会怎么样？
@@ -32,8 +33,8 @@ alter table t engine=InnoDB;
 /*描述一下引入了Online DDL之后，重建表的流程：
     1.建立一个临时文件，扫描表A主键的所有数据页；
     2.用数据页中表A的记录生成B+树，存储到临时文件中；
-    3.生成临时文件的过程中，将所有对A的操作记录在一个日志文件（row log）中，对应的是图中state2的状态；
-    4.临时文件生成后，将日志文件中的操作应用到临时文件，得到一个逻辑数据上与表A相同的数据文件，对应的就是图中state3的状态；
+    3.生成临时文件的过程中，将所有对A的操作记录在一个日志文件（row log）中；
+    4.临时文件生成后，将日志文件中的操作应用到临时文件，得到一个逻辑数据上与表A相同的数据文件；
     5.用临时文件替换表A的数据文件。
   由于日志文件记录和重放操作这个功能的存在，这个方案在重建表的过程中，允许对表A做增删改操作。
 
@@ -59,7 +60,7 @@ alter table t engine=innodb,ALGORITHM=inplace;
 
 #跟inplace对应的就是拷贝表的方式了，用法是：
 alter table t engine=innodb,ALGORITHM=copy;
-#当你使用ALGORITHM=copy的时候，表示的是强制拷贝表，对应的流程就是图3的操作过程。
+#当你使用ALGORITHM=copy的时候，表示的是强制拷贝表。
 
 #如果我要给InnoDB表的一个字段加全文索引，写法是：alter table t add FULLTEXT(field_name);
 # #这个过程是inplace的，但会阻塞增删改操作，是非Online的。

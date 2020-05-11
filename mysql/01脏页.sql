@@ -30,7 +30,9 @@ InnoDB需要有控制脏页比例的机制，来尽量避免这两种情况:
     日志写满，更新全部堵住，写性能跌为0，这种情况对敏感业务来说，是不能接受的。
 
   */
+show variables  like 'innodb_io_capacity';
 select @@innodb_io_capacity;        #控制刷脏页速度12000
+show variables  like 'innodb_flush_neighbors';
 select @@innodb_flush_neighbors;    #值为1的时候会有上述的“连坐”机制，值为0时表示不找邻居，自己刷自己的。
 #建议innodb_flush_neighbors的值设置成0。因为这时候IOPS往往不是瓶颈，而“只刷自己”，就能更快地执行完必要的刷脏页操作，减少SQL语句响应时间。
 
@@ -38,6 +40,6 @@ select @@innodb_flush_neighbors;    #值为1的时候会有上述的“连坐”
 一个内存配置为128GB、innodb_io_capacity设置为20000的大规格实例，正常会建议你将redo log设置成4个1GB的文件。
 但如果你在配置的时候不慎将redo log设置成了1个100M的文件，会发生什么情况呢？又为什么会出现这样的情况呢？
 
-每次事务提交都要写redo log，如果设置太小，很快就会被写满，也就是下面这个图的状态，这个“环”将很快被写满，write pos一直追着CP。
+每次事务提交都要写redo log，如果设置太小，很快就会被写满，write pos一直追着CP。
 这时候系统不得不停止所有更新，去推进checkpoint。你看到的现象就是磁盘压力很小，但是数据库出现间歇性的性能下跌。
  */

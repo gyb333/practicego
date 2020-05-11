@@ -59,7 +59,7 @@ create table Tt (
                     index k(k))
     engine=InnoDB;
 insert into Tt values(100,1, 'aa'),(200,2,'bb'),(300,3,'cc'),(500,5,'ee'),(600,6,'ff'),(700,7,'gg');
-select * from Tt where k between 3 and 5;   #需要执行几次树的搜索操作，会扫描多少行？
+explain select * from Tt where k between 3 and 5;   #需要执行几次树的搜索操作，会扫描多少行？
 /*
 在k索引树上找到k=3的记录，取得 ID = 300；再到ID索引树查到ID=300对应的R3；
 在k索引树取下一个值k=5，取得ID=500；再回到ID索引树查到ID=500对应的R4；
@@ -118,9 +118,10 @@ select * from geek where c=2 order by b limit 1;
 如果都已经读入到内存了，那直接更新内存会更快，就没必要使用change buffer了。
 因此，唯一索引的更新就不能使用change buffer，实际上也只有普通索引可以使用。
 
-hange buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。
+change buffer的大小，可以通过参数innodb_change_buffer_max_size来动态设置。
 这个参数设置为50的时候，表示change buffer的大小最多只能占用buffer pool的50%。
  */
+show variables  like  'innodb_change_buffer_max_size';
 
 /*如果要在这张表中插入一个新记录(4,400)的话，InnoDB的处理流程是怎样的。
 第一种情况是，这个记录要更新的目标页在内存中。这时，InnoDB的处理流程如下：
@@ -134,7 +135,7 @@ hange buffer的大小，可以通过参数innodb_change_buffer_max_size来动态
     将数据从磁盘读入内存涉及随机IO的访问，是数据库里面成本最高的操作之一。
       change buffer因为减少了随机磁盘访问，所以对更新性能的提升是会很明显的。
 
-他负责的某个业务的库内存命中率突然从99%降低到了75%，整个系统处于阻塞状态，更新语句全部堵住。
+某个业务的库内存命中率突然从99%降低到了75%，整个系统处于阻塞状态，更新语句全部堵住。
 而探究其原因后，我发现这个业务有大量插入数据的操作，而他在前一天把其中的某个普通索引改成了唯一索引。
 
  */
@@ -165,6 +166,6 @@ hange buffer的大小，可以通过参数innodb_change_buffer_max_size来动态
 merge的执行流程是这样的：从磁盘读入数据页到内存（老版本的数据页）；
 从change buffer里找出这个数据页的change buffer 记录(可能有多个），依次应用，得到新版数据页；
 写redo log。这个redo log包含了数据的变更和change buffer的变更。
-到这里merge过程就结束了。这时候，数据页和内存中change buffer对应的磁盘位置都还没有修改，属于脏页，之后各自刷回自己的物理数据，就是另外一个过程了。
+到这里merge过程就结束了。这时候，数据页和内存中change buffer对应的磁盘位置都还没有修改，属于脏页，之后各自刷回自己的物理数据。
 
  */

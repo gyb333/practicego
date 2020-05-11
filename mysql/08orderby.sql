@@ -21,7 +21,10 @@ select city,name,age from ta where city='杭州' order by name limit 1000  ;
 6.对sort_buffer中的数据按照字段name做快速排序；
 7.按照排序结果取前1000行返回给客户端。
     如果max_length_for_sort_data限制则需要，并按照id的值回到原表中取出city、name和age三个字段返回给客户端。
-
+*/
+show variables like 'max_length_for_sort_data';
+show variables like 'sort_buffer_size';
+/*
 按name排序”这个动作，可能在内存中完成，也可能需要使用外部排序，这取决于排序所需的内存和参数sort_buffer_size。
 sort_buffer_size，就是MySQL为排序开辟的内存（sort_buffer）的大小。
 如果要排序的数据量小于sort_buffer_size，排序就在内存中完成。但如果排序数据量太大，内存放不下，则不得不利用磁盘临时文件辅助排序。
