@@ -79,12 +79,13 @@ func BaseStruct()  {
 }
 
 
-
+//内存对齐：操作系统位数的整数倍，即8字节整数倍
 var x struct {	//匿名结构体类型
 	a bool			//1个字节
 	b int16			//2个字节	a和b 合并成一个机器字
 	c []int			//3个机器字 24字节
 	string		//匿名字段默认把类型设置为名称	2个机器字 16字节
+
 }
 
 func StructOffset() {

@@ -57,7 +57,7 @@ func fa(base int) (func(int) int, func(int) int) {
 /*
 因为这个匿名函数捕获了外部函数的局部变量v，这种函数我们一般叫闭包
 defer 后进先出
- */
+*/
 func deferFunc() {
 	for i := 0; i < 3; i++ {
 		defer func() { fmt.Println(i) }() 		//3		3		3
