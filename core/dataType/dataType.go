@@ -10,6 +10,7 @@ import (
 类型															大小
 bool														1个字节
 intN, uintN, floatN, complexN							N/8个字节(例如float64是8个字节)
+
 int, uint, uintptr										1个机器字
 *T														1个机器字
 string													2个机器字(data,len)
@@ -39,7 +40,8 @@ func BaseStruct()  {
 	var ptr uintptr
 	var p *int
 	var str string
-	var array [8]byte
+	var array [7]byte
+	var arr [7]rune
 	var slice []int
 	var m map[string]int
 	var c  chan struct{}
@@ -63,7 +65,8 @@ func BaseStruct()  {
 	fmt.Println("var p *int			//",reflect.TypeOf(p),Sizeof(p),Alignof(p))					//*int 8 8
 
 	fmt.Println("var str string		//",reflect.TypeOf(str),Sizeof(str),Alignof(str))			//string 16 8
-	fmt.Println("var array [8]byte	//",reflect.TypeOf(array),Sizeof(array),Alignof(array))		//[8]uint8 8 1
+	fmt.Println("var array [7]byte	//",reflect.TypeOf(array),Sizeof(array),Alignof(array))		//[8]uint8 8 1
+	fmt.Println("var arr [7]rune	//",reflect.TypeOf(arr),Sizeof(arr),Alignof(arr))		//[7]uint32 28 4
 
 	fmt.Println("var slice []int		//",reflect.TypeOf(slice),Sizeof(slice),Alignof(slice))		//[]int 24 8
 	fmt.Println("var m map[string]int	//",reflect.TypeOf(m),Sizeof(m),Alignof(m))					//map[string]int 8 8
@@ -100,6 +103,7 @@ func StructOffset() {
 	pb=&x.b
 	*pb=11
 	fmt.Println(pb,*pb,x.b)
+	fmt.Printf("%b\n",pb)
 
 }
 
