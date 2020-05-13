@@ -1,0 +1,9 @@
+1.用idea打开netty目录
+
+2.用idea的Terminal执行命令 cd common
+
+3.执行mvn clean && mvn package -Dcheckstyle.skip=true
+4.cd ..
+mvn clean && mvn package -Dcheckstyle.skip=true
+
+
