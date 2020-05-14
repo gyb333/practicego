@@ -16,6 +16,7 @@ func Closure(){
 	fmt.Println(s(1), k(2))		//0+1=1		1-2=-1
 }
 type FUNC func(int)int		//没有=不能直接计算
+type it=int		//it 声明的类型可以直接计算
 
 func fa(base int) (FUNC, func(int) int) {
 	fmt.Println(&base, base)

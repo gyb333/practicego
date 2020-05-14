@@ -37,17 +37,7 @@ func BaseStruct()  {
 	var u uint
 	var f32 float32
 	var f64 float64
-	var ptr uintptr
-	var p *int
-	var str string
-	var array [7]byte
-	var arr [7]rune
-	var slice []int
-	var m map[string]int
-	var c  chan struct{}
-	f :=func (){}		//匿名函数
-	var s struct{}		//匿名结构体
-	var in interface{}	//匿名接口
+
 
 	fmt.Println("var b bool			//",reflect.TypeOf(b),Sizeof(b),Alignof(b))					//bool 1 1
 	fmt.Println("var i8 int8 		//",reflect.TypeOf(i8),Sizeof(i8),Alignof(i8))				//int8 1 1
@@ -61,6 +51,23 @@ func BaseStruct()  {
 	fmt.Println("var f32 float32		//",reflect.TypeOf(f32),Sizeof(f32),Alignof(f32))			//float32 4 4
 	fmt.Println("var f64 float64		//",reflect.TypeOf(f64),Sizeof(f64),Alignof(f64))			//float64 8 8
 
+
+
+}
+
+func ReflectStruct()  {
+	var ptr uintptr
+	var p *int
+	var str string
+	var array [7]byte
+	var arr [7]rune
+	var slice []int
+	var m map[string]int
+	var c  chan struct{}
+	f :=func (){}		//匿名函数
+	var s struct{}		//匿名结构体
+	ss :=struct{}{}
+	var in interface{}	//匿名接口
 	fmt.Println("var ptr uintptr		//",reflect.TypeOf(ptr),Sizeof(ptr),Alignof(ptr))			//uintptr 8 8
 	fmt.Println("var p *int			//",reflect.TypeOf(p),Sizeof(p),Alignof(p))					//*int 8 8
 
@@ -74,10 +81,9 @@ func BaseStruct()  {
 
 	fmt.Println("f :=func (){}			//",reflect.TypeOf(f),Sizeof(f),Alignof(f))					//func() 8 8
 	fmt.Println("var s struct{}			//",reflect.TypeOf(s),Sizeof(s),Alignof(s))					//struct {} 0 1
+	fmt.Println("s :=struct{}{}			//",reflect.TypeOf(ss),Sizeof(ss),Alignof(ss))					//struct {} 0 1
 	fmt.Println("var in interface{}		//",reflect.TypeOf(in),Sizeof(in),Alignof(in))				//<nil> 16 8
-
 }
-
 
 //内存对齐：操作系统位数的整数倍，即8字节整数倍
 var x struct {	//匿名结构体类型
