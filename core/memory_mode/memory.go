@@ -6,7 +6,7 @@ import (
 )
 type FUNC func(int)int		//1个机器字
 
-
+//pb := (*int16)(Pointer(uintptr(Pointer(&x)) + Offsetof(x.b)))
 func DataType()  {
 	var a struct{}			//内存空间为0，在栈创建的变量指向一个固定地址
 	fmt.Printf("%p,%T,%v,%d\n",&a,a,a,unsafe.Sizeof(a))	//0x685358,struct {},{},0

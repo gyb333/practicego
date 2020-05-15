@@ -1,6 +1,11 @@
 package memory_mode
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+	"math"
+	"unsafe"
+)
 
 /*
 
@@ -17,7 +22,27 @@ import "fmt"
 func BaseConversion()  {
 	i:=55
 	fmt.Printf("%T,%v,%b,%o,%X\n",i,i,i,i,i)
+	pb :=  unsafe.Pointer(uintptr(i))		//强制转为指针类型
+	fmt.Printf("%x,%p,%T\n",i,pb,pb)
 	s := fmt.Sprintf("%b,%p", i,&i)			//格式化字符串
 	fmt.Println(s)
+
+	var f float32
+	var ip int32
+
+	// unsafe
+	f = 1.234
+	ip = *((*int32)(unsafe.Pointer(&f)))
+	fmt.Printf("%f,%x,%d,%x\n",f,f, ip,ip)
+
+	// safe
+	var tmp [4]byte
+	f = 1.234
+	fmt.Printf("%f,%x\n",f,f)
+	ip=int32(f)
+	fmt.Printf("%d,%x\n",ip,ip)
+	binary.LittleEndian.PutUint32(tmp[:], math.Float32bits(f))
+	ip = int32(binary.LittleEndian.Uint32(tmp[:]))
+	fmt.Printf("%d,%x\n",ip,ip)
 
 }
