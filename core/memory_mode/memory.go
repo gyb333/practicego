@@ -4,6 +4,16 @@ import (
 	"fmt"
 	"unsafe"
 )
+
+/*
+内存复制：copy
+切片：容量满了，会导致内存复制
+字符串转[]byte切片会导致内存复制
+[]byte切片转字符串，有可能不会导致内存复制，因为字符串不能修改
+
+ */
+
+
 type FUNC func(int)int		//1个机器字
 
 //pb := (*int16)(Pointer(uintptr(Pointer(&x)) + Offsetof(x.b)))

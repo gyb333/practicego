@@ -40,7 +40,7 @@ func PanicRecover() {
 		if err := recover(); err != nil {
 			fmt.Println("recover ", err)	//recover  first defer panic
 		}
-	}()	//延时调用函数退出或panic触发
+	}()	//延时调用  函数退出或panic触发
 	defer func() {
 		panic("first defer panic")
 	}()
