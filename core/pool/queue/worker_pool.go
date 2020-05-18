@@ -7,6 +7,7 @@ import (
 type WorkerPool struct {
 	Scheduler Scheduler
 	WorkerCount int
+
 }
 
 func NewWorkerPool(workerCount int) *WorkerPool{
