@@ -1,52 +1,65 @@
 package pool_test
 
 import (
-	"./queue"
 	. "./simple"
-	"fmt"
+	"./queue"
 	"sync"
 	"testing"
 )
 
 type Score struct {
 	Num int
-	sync.WaitGroup
+	*sync.WaitGroup
 }
 func (s *Score) Do() {
-	fmt.Println("num:", s.Num)
-	//time.Sleep(1 * 1 * time.Second)
+	//fmt.Println("num:", s.Num)
+	//time.Sleep(10* time.Microsecond)
 	defer s.Done()
 }
 
+var num = 100*100
+var datanum = 100 * 100*100*10
 
-func TestSimpleWorkerPool(t *testing.T) {
-	num := 100
-	// debug.SetMaxThreads(num + 1000) //设置最⼤线程数
+func simpleWorkerPool()  {
 	p := NewWorkerPool(num)
 	p.Run()
-	datanum := 100 * 10
 	wg:=sync.WaitGroup{}
 	wg.Add(datanum)
 	go func() {
 		for i := 1; i <= datanum; i++ {
-			sc := &Score{Num: i,WaitGroup: wg}
+			sc := &Score{Num: i,WaitGroup: &wg}
 			p.JobQueue <- sc
 		}
 	}()
 	wg.Wait()
 }
-func TestWorkerPool(t *testing.T) {
-	num := 100
+
+func TestSimpleWorkerPool(t *testing.T) {
+	simpleWorkerPool()
+}
+
+func BenchmarkSimpleWorkerPool(b *testing.B) {
+	simpleWorkerPool()
+}
+
+func queueWorkerPool()  {
 	p := queue.NewWorkerPool(num)
 	p.Run()
-	datanum := 100 * 10
 	wg:=sync.WaitGroup{}
 	wg.Add(datanum)
 	go func() {
 		for i := 1; i <= datanum; i++ {
-			sc := &Score{Num: i,WaitGroup:wg}
+			sc := &Score{Num: i,WaitGroup:&wg}
 			p.Scheduler.Submit(sc)
 		}
 	}()
 	wg.Wait()
+}
+
+func TestWorkerPool(t *testing.T) {
+	queueWorkerPool()
+}
+
+func BenchmarkWorkerPool(b *testing.B) {
+	queueWorkerPool()
 }

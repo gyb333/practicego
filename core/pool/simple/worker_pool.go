@@ -3,7 +3,6 @@ package simple
 import (
 	. "../../pool"
 	"runtime"
-	"time"
 )
 
 type Worker struct {
@@ -17,13 +16,10 @@ func NewWorker() Worker  {
 func (w Worker) Run(work chan chan Job)  {
 	go func() {
 		for{
-			work<-w.JobQueue
 			select {
+				case work<-  w.JobQueue:
 				case job:=<-w.JobQueue:
 					job.Do()
-				default:
-					runtime.Gosched()
-					time.Sleep(time.Second)
 			}
 		}
 	}()
@@ -55,8 +51,8 @@ func (wp *WorkerPool) Run(){
 				case job :=<-wp.JobQueue:
 					worker:=<-wp.WorkerQueue
 					worker<-job
-			default:
-				runtime.Gosched()
+				default:
+					runtime.Gosched()
 			}
 		}
 	}()
