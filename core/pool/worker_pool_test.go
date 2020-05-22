@@ -1,8 +1,8 @@
 package pool_test
 
 import (
-	. "./simple"
 	"./queue"
+	. "./simple"
 	"sync"
 	"testing"
 )
