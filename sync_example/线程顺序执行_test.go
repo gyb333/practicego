@@ -62,80 +62,22 @@ func TestChan(t *testing.T) {
 	wg.Wait()
 }
 
-func TestCond(t *testing.T) {
-	var wg sync.WaitGroup
-	wg.Add(2)
-	cond := sync.Cond{L: new(sync.Mutex)}
-	//让协程先执行等待
-	go func() {
-		defer wg.Done()
-		cond.L.Lock()
-		for i := 1; i <= 50; i++ {
-			cond.Wait()
-			println("协程g2:", i+i) //执行步骤4
-			if i < 50 {
-				cond.Signal()
-			}
-		}
-		cond.L.Unlock()
-	}()
 
-	go func() {
-		defer wg.Done()
-		cond.L.Lock()
-		for i := 1; i <= 50; i++ {
-			cond.Signal()
-			println("协程g1:", i+i-1) // 执行步骤1， 执行步骤5
-			if i < 50 {
-				cond.Wait()
-			}
-		}
-		cond.L.Unlock()
-	}()
-	wg.Wait()
-}
 
-func TestCond1(t *testing.T) {
-	var wg sync.WaitGroup
-	wg.Add(2)
-	cond := sync.Cond{L: new(sync.Mutex)}
-	for i := 1; i <= 2; i++ {
-		//让协程先执行等待
-		go func(j int) {
-			defer wg.Done()
-			cond.L.Lock()
-			for i := 1; i <= 50; i++ {
-				if j == 1 {
-					cond.Wait()
-					println("协程g2:", i+i) //执行步骤4
-					cond.Signal()
-				} else {
-					cond.Signal()
-					println("协程g1:", i+i-1) //执行步骤4
-					cond.Wait()
-				}
-			}
-			cond.L.Unlock()
-		}(i)
-	}
-
-	wg.Wait()
-}
 
 /*
 N个线程，按顺序交替执行打印,要求结果如下：
 */
 
 const (
-	N      = 3
-	COUNTS = 100
+	N      = 2
 )
 
 func cond2() {
 	var wg sync.WaitGroup
 	wg.Add(N)
-	ca :=sync.Cond{L: new(sync.Mutex)}
-	cb :=sync.Cond{L: new(sync.Mutex)}
+	ca := sync.Cond{L: new(sync.Mutex)}
+	cb := sync.Cond{L: new(sync.Mutex)}
 
 	go func() {
 		defer wg.Done()
@@ -159,84 +101,16 @@ func cond2() {
 		cb.L.Unlock()
 	}()
 
-
 	wg.Wait()
 
 }
 
-
-func cond3() {
-	var wg sync.WaitGroup
-	wg.Add(N)
-	ca :=sync.Cond{L: new(sync.Mutex)}
-	cb :=sync.Cond{L: new(sync.Mutex)}
-	cc :=sync.Cond{L: new(sync.Mutex)}
-	go func() {
-		defer wg.Done()
-		cc.L.Lock()
-		for i := 1; i <= 50; i++ {
-			cc.Wait()
-			println("协程g3:", i*3) //执行步骤4
-			ca.Signal()
-		}
-		cc.L.Unlock()
-	}()
-
-	go func() {
-		defer wg.Done()
-		cb.L.Lock()
-		for i := 1; i <= 50; i++ {
-			cb.Wait()
-			println("协程g2:", i*3-1) //执行步骤4
-			cc.Signal()
-		}
-		cb.L.Unlock()
-	}()
-
-	go func() {
-		defer wg.Done()
-		ca.L.Lock()
-		for i := 1; i <= 50; i++ {
-			cb.Signal()
-			println("协程g1:", i*3-2) // 执行步骤1， 执行步骤5
-			ca.Wait()
-		}
-		ca.L.Unlock()
-	}()
-
-
-	wg.Wait()
-
-}
-
-func conds() {
-	var wg sync.WaitGroup
-	wg.Add(N)
-	var cs [N]sync.Cond
-	for i := range cs {
-		cs[i] = sync.Cond{L: new(sync.Mutex)}
-	}
-	for j := range cs {
-		go func() {
-			defer wg.Done()
-			cs[j].L.Lock()
-			for i := 1; i <= 50; i++ {
-				cs[j].Wait()
-				fmt.Printf("协程g%d:%d\n",j, i) //执行步骤4
-				cs[(j+1)%N].Signal()
-			}
-			cs[j].L.Unlock()
-		}()
-	}
-	wg.Wait()
-
-}
 func TestConds(t *testing.T) {
-	cond3()
+	cond2()
 }
 
 func BenchmarkSimpleWorkerPool(b *testing.B) {
 	//for i:=0;i< b.N;i++{
-	conds()
+	cond2()
 	//}
 }
