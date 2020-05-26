@@ -1,58 +1,38 @@
 package sync_example_test
 
 import (
+	. "./conds"
 	"fmt"
-	"sync"
 	"testing"
 )
 
-type Business struct {
-	sync.Cond
-	bShouldSub bool
-}
-
-func NewBusiness()  *Business{
-	return &Business{Cond:sync.Cond{
-			L:new(sync.Mutex),
-		},
-	}
-}
-
-func (b *Business) sub(i int)  {
-	b.L.Lock()
-	defer b.L.Unlock()
-	for !b.bShouldSub{
-		b.Wait()
-	}
-	for j:=1;j<=10;j++ {
-		fmt.Printf("sub thread sequence of %d,loop of %d\n" ,j, i);
-	}
-	b.bShouldSub = false
-	b.Signal()
-}
-func (b *Business) main(i int)  {
-	b.L.Lock()
-	defer b.L.Unlock()
-	for b.bShouldSub{
-		b.Wait()
-	}
-	for j:=1;j<=20;j++ {
-		fmt.Printf("main thread sequence of %d,loop of %d\n" ,j, i);
-	}
-	b.bShouldSub = true
-	b.Signal()
-}
-
-
 
 func TestCondition(t *testing.T) {
-	business := NewBusiness()
+	oneCond := NewOneCondition()
 	go func() {
 		for i:=1;i<=50;i++ {
-			business.sub(i);
+			oneCond.DoNextFunc(func() {
+				for j:=1;j<=5;j++ {
+					fmt.Printf("Next go sequence of %d,loop of %d\n" ,j, i);
+				}
+			})
+			//oneCond.DoFunc(true,func() {
+			//	for j:=1;j<=3;j++ {
+			//		fmt.Printf("Next go sequence of %d,loop of %d\n" ,j, i);
+			//	}
+			//})
 		}
 	}()
 	for i:=1;i<=50;i++ {
-		business.main(i);
+		oneCond.DoFrontFunc(func() {
+			for j:=1;j<=10;j++ {
+				fmt.Printf("Front go sequence of %d,loop of %d\n" ,j, i);
+			}
+		})
+		//oneCond.DoFunc(false,func() {
+		//	for j:=1;j<=5;j++ {
+		//		fmt.Printf("Front go sequence of %d,loop of %d\n" ,j, i);
+		//	}
+		//})
 	}
 }
