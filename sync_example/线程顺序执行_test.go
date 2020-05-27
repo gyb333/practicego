@@ -73,23 +73,21 @@ func TestCond(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		oneCond.DoNextFunc(func() {
-		//oneCond.DoFunc(true,func() {
-			for count<100{
-				count++
-				fmt.Printf("go 协程 %d,loop of %d\n" ,2, count);
-			}
-		})
+		for count<100{
+			oneCond.DoFunc(true,func() {
+					count++
+					fmt.Printf("go 协程 2,loop of %d\n" , count);
+			})
+		}
 	}()
 	go func() {
 		defer wg.Done()
-		oneCond.DoFrontFunc(func() {
-		//oneCond.DoFunc(false,func() {
-			for count<100{
-				count++
-				fmt.Printf("go 协程 %d,loop of %d\n" ,1, count);
-			}
-		})
+		for count<100{
+			oneCond.DoFunc(false,func() {
+					count++
+					fmt.Printf("go 协程 1,loop of %d\n" , count);
+			})
+		}
 	}()
 	wg.Wait()
 }
@@ -97,36 +95,26 @@ func TestCond(t *testing.T) {
 func TestCond2(t *testing.T){
 	var wg sync.WaitGroup
 	wg.Add(2)
-	ca := sync.Cond{L: new(sync.Mutex)}
-	cb := sync.Cond{L: new(sync.Mutex)}
-	isFlag:=false
+	twoCond:=NewTwoCondition()
+	count:=0
+
 	go func() {
 		defer wg.Done()
-		for i := 1; i <= 50; i++ {
-			ca.L.Lock()
-			for isFlag{
-				ca.Wait()
-			}
-			println("协程g1:", i+i-1) // 执行步骤1， 执行步骤5
-			isFlag=true
-			cb.Signal()
-			ca.L.Unlock()
+		for count<100{
+			twoCond.DoNextFunc(func() {
+				count++
+				fmt.Printf("go 协程 2,loop of %d\n" , count);
+			})
 		}
 	}()
-
 	go func() {
 		defer wg.Done()
-		for i := 1; i <= 50; i++ {
-			cb.L.Lock()
-			for !isFlag{
-				cb.Wait()
-			}
-			println("协程g2:", i+i) //执行步骤4
-			isFlag=false
-			ca.Signal()
-			cb.L.Unlock()
+		for count<100{
+			twoCond.DoFrontFunc(func() {
+				count++
+				fmt.Printf("go 协程 1,loop of %d\n" , count);
+			})
 		}
-
 	}()
 
 	wg.Wait()

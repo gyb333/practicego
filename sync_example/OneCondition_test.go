@@ -12,7 +12,7 @@ func TestCondition(t *testing.T) {
 	go func() {
 		for i:=1;i<=50;i++ {
 			oneCond.DoNextFunc(func() {
-				for j:=1;j<=5;j++ {
+				for j:=1;j<=1;j++ {
 					fmt.Printf("Next go sequence of %d,loop of %d\n" ,j, i);
 				}
 			})
@@ -25,7 +25,7 @@ func TestCondition(t *testing.T) {
 	}()
 	for i:=1;i<=50;i++ {
 		oneCond.DoFrontFunc(func() {
-			for j:=1;j<=10;j++ {
+			for j:=1;j<=1;j++ {
 				fmt.Printf("Front go sequence of %d,loop of %d\n" ,j, i);
 			}
 		})
