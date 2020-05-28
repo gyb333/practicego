@@ -16,3 +16,19 @@ go执行顺序
 在执行包中init函数，同一个包中可以有多个init函数，编译器会自动加上别名以区分
 在执行main函数
 无法在main函数执行init函数，init函数只能执行一次
+
+
+atomic.Value的用途和volatile类似
+sync.Mutex、sync.RWMutex和ReentrantLock、ReentrantReadWriteLock类似
+sync.WaitGroup和CountDownLauch类似
+channel和future或者阻塞队列类似
+sync.Map和ConcurrentHashMap类似
+atomic包对应java的原子类
+select特性没想到在java中有对应的东西，select加channel使用很广，配合default可以实现不阻塞，有很多妙用
+sync.Once可以很方便的实现单例模式，效果相当于java中的双重synchronized的懒加载
+
+
+作为一个通用的对象池，需要包含以下主要功能：
+对象的生命周期可以精确控制 Pool提供机制允许使用方自定义对象的创建/销毁/校验逻辑
+对象的存活数量可以精确控制 Pool提供设置存活数量以及时长的配置
+获取对象有超时机制避免死锁，方便使用方实现failover 以前也遇到过许多线上故障，就是因为连接池的设置或者实现机制有缺陷导致的。

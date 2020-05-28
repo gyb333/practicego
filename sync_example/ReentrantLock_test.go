@@ -46,8 +46,8 @@ func GetGoroutineId() int {
 
 func (rl *ReentrantLock) Lock() {
 	me := GetGoroutineId()
-	rl.Lock()
-	defer rl.Unlock()
+	rl.Mutex.Lock()
+	defer rl.Mutex.Unlock()
 
 	if rl.owner == me {
 		rl.holdCount++
@@ -61,8 +61,8 @@ func (rl *ReentrantLock) Lock() {
 }
 
 func (rl *ReentrantLock) Unlock() {
-	rl.Lock()
-	defer rl.Unlock()
+	rl.Mutex.Lock()
+	defer rl.Mutex.Unlock()
 
 	if rl.holdCount == 0 || rl.owner != GetGoroutineId() {
 		panic("illegalMonitorStateError")
@@ -109,4 +109,17 @@ func TestReentrantLock(t *testing.T) {
 	ls.PrintName()
 	fmt.Println("reentrant lock single goroutine test end")
 
+	wg:=sync.WaitGroup{}
+	N:=10
+	wg.Add(N)
+	fmt.Println("reentrant lock multi goroutine test start")
+	for i:=0;i<N;i++{
+		go func() {
+			defer wg.Done()
+			ls := &LockStruct{Locker: NewReentrantLock()}
+			ls.PrintName()
+		}()
+	}
+	wg.Wait()
+	fmt.Println("reentrant lock multi goroutine test end")
 }

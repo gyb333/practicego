@@ -13,6 +13,9 @@ unsafe.Alignof 函数返回对应参数的类型需要对齐的倍数. 和 Sizeo
 
 unsafe.Offsetof 函数的参数必须是一个字段 x.f, 然后返回 f 字段相对于 x 起始地址的偏移量, 包括可能的空洞.
 
+
+
+
 go test -bench .
 go test -bench . -cpuprofile cpu.out
 go tool pprof cpu.out

@@ -1,4 +1,4 @@
-package studymap
+package _map
 
 import (
 	"testing"
