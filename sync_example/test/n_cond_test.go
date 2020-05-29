@@ -1,7 +1,7 @@
-package sync_example_test
+package test_test
 
 import (
-	. "./conds"
+	. ".."
 	"fmt"
 	"sync"
 	"testing"

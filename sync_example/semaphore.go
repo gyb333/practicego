@@ -1,12 +1,7 @@
-package sync_example_test
+package sync_example
 
-import (
-	"fmt"
-	"math/rand"
-	"sync"
-	"testing"
-	"time"
-)
+import "time"
+
 /*
 用通道实现信号量，控制并发个数,获取许可(Acquire())、指定时间内获取许可(TryAcquireOnTime)、释放许可(Release())
 
@@ -15,7 +10,7 @@ import (
 
 线程池:用来控制实际工作的线程数量，通过线程复用的方式来减小内存开销。线程池可同时工作的线程数量是一定的，
 超过该数量的线程需进入线程队列等待，直到有可用的工作线程来执行任务。
- */
+*/
 
 type Semaphore struct {
 	length int 		//许可数量
@@ -65,23 +60,3 @@ func (s *Semaphore) Permits() int {
 }
 
 
-
-func TestSemaphore(t *testing.T) {
-	wg:=sync.WaitGroup{}
-	N:=10
-	wg.Add(N)
-	s:=NewSemaphore(3)
-	for i:=0;i<N;i++{
-		go func(i int) {
-			defer wg.Done()
-			s.Acquire()
-			fmt.Printf("协程%d,进入，当前已有%d个并发\n",i,s.Permits())
-			//设置随机种子
-			rand.Seed(time.Now().UnixNano())
-			time.Sleep(time.Duration(rand.Intn(10))*time.Second)	//模拟耗时操作
-			fmt.Printf("协程%d,即将离开\n",i)
-			s.Release()
-		}(i)
-	}
-	wg.Wait()
-}

@@ -1,4 +1,4 @@
-package conds
+package sync_example
 
 import "sync"
 
