@@ -19,3 +19,36 @@ unsafe.Offsetof 函数的参数必须是一个字段 x.f, 然后返回 f 字段�
 go test -bench .
 go test -bench . -cpuprofile cpu.out
 go tool pprof cpu.out
+
+go语言相关体现 go 测试与性能 go test -bench . go test -bench . -cpuprofile cpu.out go tool pprof cpu.out
+
+go 包安装
+ go get -v -u github.com/gpmgo/gopm
+ go build github.com/gpmgo/gopm
+ go install github.com/gpmgo/gopm
+
+go get golang.org/x/text 国内安装不了
+gopm get -g -v golang.org/x/text
+git clone https://github.com/golang/text.git
+
+ go get github.com/golang/tools/godoc 国内安装不了
+ gopm get -g -v golang.org/x/tools
+ 编译 go build golang.org/x/tools/cmd/godoc
+ 安装
+gopm get -g -v golang.org/x/tools/cmd/goimports
+go build golang.org/x/tools/cmd/goimports
+go install golang.org/x/tools/cmd/goimports
+
+//gopm get -g -v golang.org/x/net/html
+
+阿里云学习地址 https://edu.aliyun.com/course/explore/golang?spm=5176.8764728.aliyun-edu-course-header.3.1e96a0beUC2uRc
+
+配置文件 go get github.com/spf13/viper
+
+编译安装swagger
+go build github.com\swaggo\swag\cmd\swag
+go install github.com\swaggo\swag\cmd\swag
+在项目位置 swag init 初始化swagger
+在项目启动的地方导入
+import _ "GinHello/src/docs"
+http://localhost:8080/swagger/index.html
