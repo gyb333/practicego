@@ -3,7 +3,7 @@ package main
 import (
 		"os"
 	"log"
-	. "middleware/MQ/common"
+	. "GYB.Common"
 )
 
 //实现了一个可以广播消息给多个接收者的日志系统

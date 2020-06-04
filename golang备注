@@ -52,3 +52,5 @@ go install github.com\swaggo\swag\cmd\swag
 在项目启动的地方导入
 import _ "GinHello/src/docs"
 http://localhost:8080/swagger/index.html
+
+GOPROXY=https://goproxy.cn,direct

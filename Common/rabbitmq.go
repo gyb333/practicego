@@ -1,19 +1,12 @@
-package common
+package Common
 
 import (
-	"log"
 	"fmt"
 	"github.com/streadway/amqp"
 	"os"
 	"strings"
 )
 
-func FailOnError(err error, msg string){
-	if err != nil {
-		log.Fatalf("%s:%s", msg, err)
-		panic(fmt.Sprintf("%s:%s", msg, err))
-	}
-}
 
 
 func GetRabbitConn() *amqp.Connection{

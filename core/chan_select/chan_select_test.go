@@ -1,7 +1,7 @@
 package chan_select_test
 
 import (
-	. "../chan_select"
+	. "Core/chan_select"
 	"testing"
 )
 

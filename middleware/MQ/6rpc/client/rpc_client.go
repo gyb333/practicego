@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"time"
 	"log"
-	. "middleware/MQ/common"
+	. "GYB.Common"
 	"fmt"
 )
 

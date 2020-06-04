@@ -2,7 +2,7 @@ package Redis
 
 import (
 	"github.com/garyburd/redigo/redis"
-	. "middleware/RedisRedis/common"
+	. "GYB.Common"
 )
 
 func AddZset(payloadKey string, score int64, zsetName string) (err error) {

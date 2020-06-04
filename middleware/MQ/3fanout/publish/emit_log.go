@@ -4,7 +4,7 @@ import (
 	"github.com/streadway/amqp"
 	"os"
 	"log"
-	. "middleware/MQ/common"
+	. "GYB.Common"
 )
 
 

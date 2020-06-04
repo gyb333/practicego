@@ -1,7 +1,7 @@
 package test
 
 import (
-	. ".."
+	. "SyncExample"
 	"fmt"
 	"math/rand"
 	"sync"

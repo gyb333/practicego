@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>经销商公司转换</name>
+    <name>基础学习</name>
     <description/>
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <trans_status>0</trans_status>
     <directory>/</directory>
     <parameters>
     </parameters>
@@ -441,23 +440,23 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2020/04/14 14:49:12.703</created_date>
+    <created_date>2020/04/16 14:50:43.846</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2020/04/14 14:49:12.703</modified_date>
+    <modified_date>2020/04/16 14:50:43.846</modified_date>
     <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>ODS</name>
-    <server>${ODS.SERVER}</server>
+    <name>KDS2</name>
+    <server>10.227.201.44</server>
     <type>MSSQLNATIVE</type>
     <access>Native</access>
-    <database>${ODS.DATABASE}</database>
-    <port>${ODS.PORT}</port>
-    <username>${ODS.USERNAME}</username>
-    <password>${ODS.PASSWORD}</password>
+    <database>KDS2YFB</database>
+    <port>1433</port>
+    <username>user_tmp_gwa</username>
+    <password>Encrypted 2be98afc81fd49796940da360e195b8db</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -484,7 +483,7 @@
       </attribute>
       <attribute>
         <code>PORT_NUMBER</code>
-        <attribute>${ODS.PORT}</attribute>
+        <attribute>1433</attribute>
       </attribute>
       <attribute>
         <code>PRESERVE_RESERVED_WORD_CASE</code>
@@ -510,165 +509,70 @@
   </connection>
   <order>
     <hop>
-      <from>Switch / case</from>
-      <to>全量模式</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Switch / case</from>
-      <to>增量模式</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Switch / case</from>
-      <to>自定义时间段模式</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>表输入</from>
       <to>获取系统信息</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>获取系统信息</from>
-      <to>JavaScript代码</to>
+      <to>生成随机数</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Blocking step</from>
+      <to>解锁状态</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>JavaScript代码</from>
-      <to>Switch / case</to>
+      <to>Blocking step</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Switch / case</from>
-      <to>什么都不做</to>
+      <from>JavaScript代码</from>
+      <to>解锁状态</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>生成随机数</from>
+      <to>JavaScript代码</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
+    <name>Blocking step</name>
+    <type>BlockingStep</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <pass_all_rows>N</pass_all_rows>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>block</prefix>
+    <cache_size>5000</cache_size>
+    <compress>Y</compress>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>608</xloc>
+      <yloc>272</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
     <name>JavaScript代码</name>
     <type>ScriptValueMod</type>
     <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <compatible>N</compatible>
-    <optimizationLevel>9</optimizationLevel>
-    <jsScripts>
-      <jsScript>
-        <jsScript_type>0</jsScript_type>
-        <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>//Script here
-var SyncModelState=-1
-
-
-
-//Alert(LastSuccessSyncTime)
-//Alert(LastSyncTime)
-//var lastTime=str2date(LastSuccessSyncTime,"yyyy-MM-dd HH:mm:ss.SSS","EN")
-var lastTime=str2date(LastSuccessSyncTime,"yyyy-MM-dd HH:mm:ss.SSS","ZH")
-//Alert(lastTime)
-
-if(SyncState==0){	 
-	SyncModelState=SyncModel
-}else{
-	//var dt=CurrentSyncTime.getTime()-lastTime.getTime()
-	//var minutes=Math.floor(dt/(60*1000))
-	var minutes=dateDiff(lastTime,CurrentSyncTime,'mi')
-	//Alert(minutes)
-	if(minutes>60){
-		SyncModelState=SyncModel
-	}
-}
-
-
-//Alert(SyncModelState)
-//var BeginSyncTime=BeginTime
-//var EndSyncTime=EndTime</jsScript_script>
-      </jsScript>
-    </jsScripts>
-    <fields>
-      <field>
-        <name>SyncModelState</name>
-        <rename>SyncModelState</rename>
-        <type>Integer</type>
-        <length>16</length>
-        <precision>-1</precision>
-        <replace>N</replace>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>560</xloc>
-      <yloc>224</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Switch / case</name>
-    <type>SwitchCase</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <fieldname>SyncModelState</fieldname>
-    <use_contains>N</use_contains>
-    <case_value_type>Number</case_value_type>
-    <case_value_format/>
-    <case_value_decimal/>
-    <case_value_group/>
-    <default_target_step/>
-    <cases>
-      <case>
-        <value>-1</value>
-        <target_step>什么都不做</target_step>
-      </case>
-      <case>
-        <value>0</value>
-        <target_step>全量模式</target_step>
-      </case>
-      <case>
-        <value>1</value>
-        <target_step>增量模式</target_step>
-      </case>
-      <case>
-        <value>2</value>
-        <target_step>自定义时间段模式</target_step>
-      </case>
-    </cases>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>800</xloc>
-      <yloc>224</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>什么都不做</name>
-    <type>ScriptValueMod</type>
-    <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
@@ -684,7 +588,16 @@ if(SyncState==0){
         <jsScript_name>Script 1</jsScript_name>
         <jsScript_script>//Script here
 
-//Alert( SyncModelState)</jsScript_script>
+Alert('hello')
+//Alert(date2str('2020/04/15 11:37:01.723000000')) 
+var dValue = new Date();
+Alert(date2str(dValue,"dd.MM.yyyy HH:mm:ss.SSS","EN"));
+
+
+
+Alert(str2date('2020-04-14 17:34:15.237',"yyyy-MM-dd HH:mm:ss.SSS","EN"));
+
+Alert(str2date('2020/04/15 11:37:01.723',"yyyy/MM/dd HH:mm:ss.SSS","EN"));</jsScript_script>
       </jsScript>
     </jsScripts>
     <fields>    </fields>
@@ -697,14 +610,14 @@ if(SyncState==0){
       </output>
     </remotesteps>
     <GUI>
-      <xloc>656</xloc>
-      <yloc>112</yloc>
+      <xloc>688</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>全量模式</name>
-    <type>TransExecutor</type>
+    <name>生成随机数</name>
+    <type>RandomValue</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -713,46 +626,12 @@ if(SyncState==0){
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <specification_method>filename</specification_method>
-    <trans_object_id/>
-    <trans_name/>
-    <filename>${Internal.Entry.Current.Directory}/全量模式.ktr</filename>
-    <directory_path/>
-    <group_size>1</group_size>
-    <group_field/>
-    <group_time/>
-    <parameters>
-      <variablemapping>
-        <variable>ETLId</variable>
-        <field>ETLId</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>CurrentSyncTime</variable>
-        <field>CurrentSyncTime</field>
-        <input/>
-      </variablemapping>
-      <inherit_all_vars>Y</inherit_all_vars>
-    </parameters>
-    <execution_result_target_step/>
-    <execution_time_field>ExecutionTime</execution_time_field>
-    <execution_result_field>ExecutionResult</execution_result_field>
-    <execution_errors_field>ExecutionNrErrors</execution_errors_field>
-    <execution_lines_read_field>ExecutionLinesRead</execution_lines_read_field>
-    <execution_lines_written_field>ExecutionLinesWritten</execution_lines_written_field>
-    <execution_lines_input_field>ExecutionLinesInput</execution_lines_input_field>
-    <execution_lines_output_field>ExecutionLinesOutput</execution_lines_output_field>
-    <execution_lines_rejected_field>ExecutionLinesRejected</execution_lines_rejected_field>
-    <execution_lines_updated_field>ExecutionLinesUpdated</execution_lines_updated_field>
-    <execution_lines_deleted_field>ExecutionLinesDeleted</execution_lines_deleted_field>
-    <execution_files_retrieved_field>ExecutionFilesRetrieved</execution_files_retrieved_field>
-    <execution_exit_status_field>ExecutionExitStatus</execution_exit_status_field>
-    <execution_log_text_field>ExecutionLogText</execution_log_text_field>
-    <execution_log_channelid_field>ExecutionLogChannelId</execution_log_channelid_field>
-    <result_rows_target_step/>
-    <result_files_target_step/>
-    <result_files_file_name_field>FileName</result_files_file_name_field>
-    <executors_output_step/>
+    <fields>
+      <field>
+        <name>Id</name>
+        <type>random uuid</type>
+      </field>
+    </fields>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -762,158 +641,8 @@ if(SyncState==0){
       </output>
     </remotesteps>
     <GUI>
-      <xloc>800</xloc>
-      <yloc>96</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>增量模式</name>
-    <type>TransExecutor</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <specification_method>filename</specification_method>
-    <trans_object_id/>
-    <trans_name/>
-    <filename>${Internal.Entry.Current.Directory}/增量模式.ktr</filename>
-    <directory_path/>
-    <group_size>1</group_size>
-    <group_field/>
-    <group_time/>
-    <parameters>
-      <variablemapping>
-        <variable>ETLId</variable>
-        <field>ETLId</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>CurrentSyncTime</variable>
-        <field>CurrentSyncTime</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>ErrorGapUnit</variable>
-        <field>ErrorGapUnit</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>AllErrorGapTime</variable>
-        <field>AllErrorGapTime</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>LastSuccessSyncTime</variable>
-        <field>LastSuccessSyncTime</field>
-        <input/>
-      </variablemapping>
-      <inherit_all_vars>Y</inherit_all_vars>
-    </parameters>
-    <execution_result_target_step/>
-    <execution_time_field>ExecutionTime</execution_time_field>
-    <execution_result_field>ExecutionResult</execution_result_field>
-    <execution_errors_field>ExecutionNrErrors</execution_errors_field>
-    <execution_lines_read_field>ExecutionLinesRead</execution_lines_read_field>
-    <execution_lines_written_field>ExecutionLinesWritten</execution_lines_written_field>
-    <execution_lines_input_field>ExecutionLinesInput</execution_lines_input_field>
-    <execution_lines_output_field>ExecutionLinesOutput</execution_lines_output_field>
-    <execution_lines_rejected_field>ExecutionLinesRejected</execution_lines_rejected_field>
-    <execution_lines_updated_field>ExecutionLinesUpdated</execution_lines_updated_field>
-    <execution_lines_deleted_field>ExecutionLinesDeleted</execution_lines_deleted_field>
-    <execution_files_retrieved_field>ExecutionFilesRetrieved</execution_files_retrieved_field>
-    <execution_exit_status_field>ExecutionExitStatus</execution_exit_status_field>
-    <execution_log_text_field>ExecutionLogText</execution_log_text_field>
-    <execution_log_channelid_field>ExecutionLogChannelId</execution_log_channelid_field>
-    <result_rows_target_step/>
-    <result_files_target_step/>
-    <result_files_file_name_field>FileName</result_files_file_name_field>
-    <executors_output_step/>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>992</xloc>
-      <yloc>224</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>自定义时间段模式</name>
-    <type>TransExecutor</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <specification_method>filename</specification_method>
-    <trans_object_id/>
-    <trans_name/>
-    <filename>${Internal.Entry.Current.Directory}/自定义时间段模式.ktr</filename>
-    <directory_path/>
-    <group_size>1</group_size>
-    <group_field/>
-    <group_time/>
-    <parameters>
-      <variablemapping>
-        <variable>ETLId</variable>
-        <field>ETLId</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>BeginTime</variable>
-        <field>BeginTime</field>
-        <input/>
-      </variablemapping>
-      <variablemapping>
-        <variable>EndTime</variable>
-        <field>EndTime</field>
-        <input/>
-      </variablemapping>
-      <inherit_all_vars>Y</inherit_all_vars>
-    </parameters>
-    <execution_result_target_step/>
-    <execution_time_field>ExecutionTime</execution_time_field>
-    <execution_result_field>ExecutionResult</execution_result_field>
-    <execution_errors_field>ExecutionNrErrors</execution_errors_field>
-    <execution_lines_read_field>ExecutionLinesRead</execution_lines_read_field>
-    <execution_lines_written_field>ExecutionLinesWritten</execution_lines_written_field>
-    <execution_lines_input_field>ExecutionLinesInput</execution_lines_input_field>
-    <execution_lines_output_field>ExecutionLinesOutput</execution_lines_output_field>
-    <execution_lines_rejected_field>ExecutionLinesRejected</execution_lines_rejected_field>
-    <execution_lines_updated_field>ExecutionLinesUpdated</execution_lines_updated_field>
-    <execution_lines_deleted_field>ExecutionLinesDeleted</execution_lines_deleted_field>
-    <execution_files_retrieved_field>ExecutionFilesRetrieved</execution_files_retrieved_field>
-    <execution_exit_status_field>ExecutionExitStatus</execution_exit_status_field>
-    <execution_log_text_field>ExecutionLogText</execution_log_text_field>
-    <execution_log_channelid_field>ExecutionLogChannelId</execution_log_channelid_field>
-    <result_rows_target_step/>
-    <result_files_target_step/>
-    <result_files_file_name_field>FileName</result_files_file_name_field>
-    <executors_output_step/>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>800</xloc>
-      <yloc>336</yloc>
+      <xloc>416</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -930,7 +659,7 @@ if(SyncState==0){
     </partitioning>
     <fields>
       <field>
-        <name>CurrentSyncTime</name>
+        <name>Now</name>
         <type>system date (variable)</type>
       </field>
     </fields>
@@ -943,8 +672,8 @@ if(SyncState==0){
       </output>
     </remotesteps>
     <GUI>
-      <xloc>416</xloc>
-      <yloc>224</yloc>
+      <xloc>288</xloc>
+      <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -959,15 +688,44 @@ if(SyncState==0){
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>ODS</connection>
-    <sql>SELECT  ETLId,SyncModel , SyncState , CONVERT(varchar(100), LastSuccessSyncTime, 121) LastSuccessSyncTime , AllErrorGapTime,ErrorGapUnit,
-CONVERT(varchar(100), BeginTime, 121) BeginTime , CONVERT(varchar(100), EndTime, 121) EndTime
---,GetDate() AS CurrentSyncTime
-FROM    ODS_ETL_Config WHERE ETLId=${ETLId}</sql>
+    <connection>KDS2</connection>
+    <sql>SELECT top 1 CompanyID ,
+		           CompanyCode ,
+		           CompanyName ,
+		           CompanyCodeSAP ,
+		           CompanyScope ,
+		           ArtificialPerson ,
+		           LicenceNO ,
+		           TaxNo ,
+		           CompanyAddr ,
+		           CompanyContact ,
+		           CompanyTel ,
+		           CompanyFax ,
+		           CompanyPostalNo ,
+		           Remark ,
+		           IsVirtual ,
+		           CreateDate ,
+		           ModifyDate ,
+		           CompanyType ,
+		           BussLineID ,
+		           OrgSalesID ,
+		           OrgBranchID ,
+		           OrgOfficeID ,
+		           OrgOther1ID ,
+		           Disabled ,
+		           Longitude ,
+		           Latitude ,
+		           Zoom ,
+		          CONVERT(NVARCHAR(20),MobilePhone) MobilePhone ,
+		           Email ,
+		           QQ ,
+		           WebChat ,
+		           AreaID  
+		       FROM dbo.VY2tCompany  </sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
-    <variables_active>Y</variables_active>
+    <variables_active>N</variables_active>
     <lazy_conversion_active>N</lazy_conversion_active>
     <attributes/>
     <cluster_schema/>
@@ -978,12 +736,79 @@ FROM    ODS_ETL_Config WHERE ETLId=${ETLId}</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>288</xloc>
-      <yloc>224</yloc>
+      <xloc>128</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>解锁状态</name>
+    <type>TransExecutor</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <specification_method>filename</specification_method>
+    <trans_object_id/>
+    <trans_name/>
+    <filename>${Internal.Entry.Current.Directory}/解锁状态.ktr</filename>
+    <directory_path/>
+    <group_size>1</group_size>
+    <group_field/>
+    <group_time/>
+    <parameters>
+      <inherit_all_vars>Y</inherit_all_vars>
+    </parameters>
+    <execution_result_target_step/>
+    <execution_time_field>ExecutionTime</execution_time_field>
+    <execution_result_field>ExecutionResult</execution_result_field>
+    <execution_errors_field>ExecutionNrErrors</execution_errors_field>
+    <execution_lines_read_field>ExecutionLinesRead</execution_lines_read_field>
+    <execution_lines_written_field>ExecutionLinesWritten</execution_lines_written_field>
+    <execution_lines_input_field>ExecutionLinesInput</execution_lines_input_field>
+    <execution_lines_output_field>ExecutionLinesOutput</execution_lines_output_field>
+    <execution_lines_rejected_field>ExecutionLinesRejected</execution_lines_rejected_field>
+    <execution_lines_updated_field>ExecutionLinesUpdated</execution_lines_updated_field>
+    <execution_lines_deleted_field>ExecutionLinesDeleted</execution_lines_deleted_field>
+    <execution_files_retrieved_field>ExecutionFilesRetrieved</execution_files_retrieved_field>
+    <execution_exit_status_field>ExecutionExitStatus</execution_exit_status_field>
+    <execution_log_text_field>ExecutionLogText</execution_log_text_field>
+    <execution_log_channelid_field>ExecutionLogChannelId</execution_log_channelid_field>
+    <result_rows_target_step/>
+    <result_files_target_step/>
+    <result_files_file_name_field>FileName</result_files_file_name_field>
+    <executors_output_step/>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>752</xloc>
+      <yloc>272</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step_error_handling>
+    <error>
+      <source_step>JavaScript代码</source_step>
+      <target_step>解锁状态</target_step>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename/>
+      <descriptions_valuename/>
+      <fields_valuename/>
+      <codes_valuename/>
+      <max_errors/>
+      <max_pct_errors/>
+      <min_pct_rows/>
+    </error>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>

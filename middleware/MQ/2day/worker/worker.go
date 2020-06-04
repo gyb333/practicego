@@ -4,7 +4,7 @@ import (
 	"log"
 	"bytes"
 	"time"
-	. "middleware/MQ/common"
+	. "GYB.Common"
 	"os/signal"
 	"syscall"
 	"os"

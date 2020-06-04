@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/garyburd/redigo/redis"
 	"fmt"
-	. "middleware/RedisRedis/common"
+	. "GYB.Common"
 	"time"
 )
 

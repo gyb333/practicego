@@ -1,9 +1,7 @@
-package common
+package Common
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"log"
-	"fmt"
 )
 
 type RedisKv struct {
@@ -35,12 +33,7 @@ func Init(network, address string)  {
 }
 
 
-func FailOnError(err error, msg string){
-	if err != nil {
-		log.Fatalf("%s:%s", msg, err)
-		panic(fmt.Sprintf("%s:%s", msg, err))
-	}
-}
+
 
 func GetRedisConn(network, address string)  redis.Conn{
 

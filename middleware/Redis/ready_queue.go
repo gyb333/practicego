@@ -2,7 +2,7 @@ package Redis
 
 import (
 	"github.com/garyburd/redigo/redis"
-	. "middleware/RedisRedis/common"
+	. "GYB.Common"
 )
 
 //实现简单延时队列

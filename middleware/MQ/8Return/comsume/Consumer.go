@@ -1,6 +1,6 @@
 package main
 import (
-	. "middleware/MQ/common"
+	. "GYB.Common"
 	"log"
 )
 

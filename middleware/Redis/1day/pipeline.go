@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "../common"
+	. "GYB.Common"
 	"fmt"
 	"strconv"
 	"time"

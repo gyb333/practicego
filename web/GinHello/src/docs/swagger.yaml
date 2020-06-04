@@ -1,0 +1,13 @@
+host: localhost:8080
+info:
+  contact:
+    email: ×××@qq.com
+    name: API Support
+    url: http://www.cnblogs.com
+  description: Golang api of ginweb
+  license: {}
+  termsOfService: http://github.com
+  title: Golang Esign API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

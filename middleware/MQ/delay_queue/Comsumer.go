@@ -1,7 +1,7 @@
 package main
 
 import (
-		. "middleware/MQ/common"
+		. "GYB.Common"
 	"github.com/streadway/amqp"
 	"os"
 	"os/signal"

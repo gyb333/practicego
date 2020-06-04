@@ -3,7 +3,7 @@ package Redis
 import (
 	"github.com/garyburd/redigo/redis"
 	"strconv"
-	. "middleware/RedisRedis/common"
+	. "GYB.Common"
 )
 
 func SetPayload(key, value string) (err error) {
