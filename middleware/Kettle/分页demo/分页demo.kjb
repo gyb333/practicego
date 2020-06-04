@@ -11,7 +11,17 @@
   <modified_user>-</modified_user>
   <modified_date>2020/06/03 11:13:25.925</modified_date>
   <parameters>
-    </parameters>
+    <parameter>
+      <name>IsStartPageNo</name>
+      <default_value>false</default_value>
+      <description>是否启用StartPageNo命令参数</description>
+    </parameter>
+    <parameter>
+      <name>StartPageNo</name>
+      <default_value>1</default_value>
+      <description>开始的页面序号</description>
+    </parameter>
+  </parameters>
   <slaveservers>
     <slaveserver>
       <name>CarteMaster</name>
@@ -323,13 +333,13 @@
       <attributes_kjc/>
     </entry>
     <entry>
-      <name>获取总页数</name>
+      <name>设置分页参数</name>
       <description/>
       <type>TRANS</type>
       <attributes/>
       <specification_method>filename</specification_method>
       <trans_object_id/>
-      <filename>${Internal.Entry.Current.Directory}/获取总页数.ktr</filename>
+      <filename>${Internal.Entry.Current.Directory}/设置分页参数.ktr</filename>
       <transname/>
       <arg_from_previous>N</arg_from_previous>
       <params_from_previous>Y</params_from_previous>
@@ -361,7 +371,7 @@
       <attributes_kjc/>
     </entry>
     <entry>
-      <name>JavaScript</name>
+      <name>转换前执行逻辑</name>
       <description/>
       <type>EVAL</type>
       <attributes/>
@@ -373,8 +383,8 @@ var log= logFactory.create(subject);
 
 //实例化日志channel对象
 //var log= new org.pentaho.di.core.logging.LogChannel(subject);	
- 
-var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数值(当前第几页)
+ 		//parent_job.setVariable("CURR_PAGE_OK",1);
+		var currPage = parent_job.getVariable("CURR_PAGE_OK");// 从job获取当前页数值(当前第几页)
         var total_count = parseInt(parent_job.getVariable("TOTAL_COUNT")); // 从job中获取本次导入的总条数
         var page_size = parseInt(parent_job.getVariable("PAGE_SIZE")); // 分页条数
         //var total_page = parent_job.getVariable("TOTAL_PAGE"); // 本次导入的总分页数
@@ -393,22 +403,22 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
 	}else{
         if(currPage > page_count){
 			log.logMinimal("执行完成");
-			parent_job.setVariable("CURR_PAGE",1);
+			parent_job.setVariable("CURR_PAGE_OK",1);
             false;
         }else{
 			//日志输出
 			log.logMinimal("total_count:"+total_count+" page_size:"+page_size+"page_count:"+page_count+"当前执行currPage:"+currPage);
             var start = (currPage -1 ) * page_size;
             parent_job.setVariable("START_ROW",start);
-            parent_job.setVariable("CURR_PAGE",currPage+1);
+            parent_job.setVariable("CURR_PAGE",currPage);
             true;
         }
 }</script>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>448</xloc>
-      <yloc>80</yloc>
+      <xloc>464</xloc>
+      <yloc>112</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -450,28 +460,6 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
       <attributes_kjc/>
     </entry>
     <entry>
-      <name>Dummy</name>
-      <description/>
-      <type>SPECIAL</type>
-      <attributes/>
-      <start>N</start>
-      <dummy>Y</dummy>
-      <repeat>N</repeat>
-      <schedulerType>0</schedulerType>
-      <intervalSeconds>0</intervalSeconds>
-      <intervalMinutes>60</intervalMinutes>
-      <hour>12</hour>
-      <minutes>0</minutes>
-      <weekDay>1</weekDay>
-      <DayOfMonth>1</DayOfMonth>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>544</xloc>
-      <yloc>16</yloc>
-      <attributes_kjc/>
-    </entry>
-    <entry>
       <name>成功</name>
       <description/>
       <type>SUCCESS</type>
@@ -483,11 +471,28 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
       <yloc>256</yloc>
       <attributes_kjc/>
     </entry>
+    <entry>
+      <name>转换后执行逻辑</name>
+      <description/>
+      <type>EVAL</type>
+      <attributes/>
+      <script>
+var currPage = parseInt(parent_job.getVariable("CURR_PAGE"));
+parent_job.setVariable("CURR_PAGE_OK",currPage+1);
+
+true;</script>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>576</xloc>
+      <yloc>16</yloc>
+      <attributes_kjc/>
+    </entry>
   </entries>
   <hops>
     <hop>
       <from>Start</from>
-      <to>获取总页数</to>
+      <to>设置分页参数</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -495,25 +500,7 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>转换</from>
-      <to>Dummy</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
-    </hop>
-    <hop>
-      <from>Dummy</from>
-      <to>JavaScript</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>JavaScript</from>
+      <from>转换前执行逻辑</from>
       <to>成功</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -522,8 +509,8 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>获取总页数</from>
-      <to>JavaScript</to>
+      <from>设置分页参数</from>
+      <to>转换前执行逻辑</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -531,8 +518,26 @@ var currPage = parent_job.getVariable("CURR_PAGE");// 从job获取当前页数�
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>JavaScript</from>
+      <from>转换前执行逻辑</from>
       <to>转换</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>转换</from>
+      <to>转换后执行逻辑</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>转换后执行逻辑</from>
+      <to>转换前执行逻辑</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>

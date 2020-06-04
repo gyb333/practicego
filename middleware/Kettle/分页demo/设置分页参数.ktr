@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>获取总页数</name>
+    <name>设置分页参数</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -543,7 +543,14 @@ var PAGE_COUNT = parseInt((TOTAL_COUNT+PAGE_SIZE-1) / PAGE_SIZE);
 //Alert(PAGE_COUNT)
 setVariable("PAGE_COUNT",PAGE_COUNT,"r");
 //var test=getVariable("CURR_PAGE","test")
-//Alert(test)
+
+ 
+var IsStartPageNo= getVariable("IsStartPageNo", false);
+//Alert(IsStartPageNo)
+if (IsStartPageNo === 'true'){
+	var CURR_PAGE_OK= parseInt(getVariable("StartPageNo", false));
+	setVariable("CURR_PAGE_OK",CURR_PAGE_OK,"r");
+}
 
  
 </jsScript_script>
