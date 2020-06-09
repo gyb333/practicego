@@ -1,0 +1,39 @@
+
+在本机执行curl 127.0.0.1:8000/test，检查是否返回{"message":"test"}
+
+
+在本机执行curl 127.0.0.1:8000/api/v1/tags，正确的返回值为{"code":200,"data":{"lists":[],"total":0},"msg":"ok"}，若存在问题请结合gin结果进行拍错。
+
+用Postman用POST访问http://127.0.0.1:8000/api/v1/tags?name=1&state=1&created_by=test，查看code是否返回200及blog_tag表中是否有值，有值则正确。
+再在用Postman用POST访问http://127.0.0.1:8000/api/v1/tags?name=2&state=1&created_by=test，发现created_on已经有值了！
+
+gorm所支持的回调方法：
+创建：BeforeSave、BeforeCreate、AfterCreate、AfterSave
+更新：BeforeSave、BeforeUpdate、AfterUpdate、AfterSave
+删除：BeforeDelete、AfterDelete
+查询：AfterFind
+
+PUT访问http://127.0.0.1:8000/api/v1/tags/1?name=edit1&state=0&modified_by=edit1，查看code是否返回200
+DELETE访问http://127.0.0.1:8000/api/v1/tags/1，查看code是否返回200
+
+
+POST：http://127.0.0.1:8000/api/v1/articles?tag_id=1&title=test1&desc=test-desc&content=test-content&created_by=test-created&state=1
+GET：http://127.0.0.1:8000/api/v1/articles
+GET：http://127.0.0.1:8000/api/v1/articles/1
+PUT：http://127.0.0.1:8000/api/v1/articles/1?tag_id=1&title=test-edit1&desc=test-desc-edit&content=test-content-edit&modified_by=test-created-edit&state=0
+DELETE：http://127.0.0.1:8000/api/v1/articles/1
+
+验证Token
+重启服务后，用GET方式访问http://127.0.0.1:8000/auth?username=test&password=test123456，查看返回值是否正确
+
+{
+  "code": 200,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJwYXNzd29yZCI6InRlc3QxMjM0NTYiLCJleHAiOjE1MTg3MjAwMzcsImlzcyI6Imdpbi1ibG9nIn0.-kK0V9E06qTHOzupQM_gHXAGDB3EJtJS4H5TTCyWwW8"
+  },
+  "msg": "ok"
+}
+我们需要访问http://127.0.0.1:8000/auth?username=test&password=test123456，得到token
+访问http://127.0.0.1:8000/api/v1/articles?token=eyJhbGci...，检查接口返回值
+
+
