@@ -36,4 +36,78 @@ nginx.conf 进行配置，如果你不知道对应的配置文件是哪个，可
 反向代理
 反向代理是指以代理服务器来接受网络上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给请求连接的客户端，此时代理服务器对外就表现为一个反向代理服务器。（来自百科）
 
-![Image text](https://github.com/gyb333/practicego/middleware/Nginx/images/articlex.png)
+![Image text](https://github.com/gyb333/practicego/blob/master/middleware/Nginx/images/articlex.png?raw=true)
+
+配置 hosts
+由于需要用本机作为演示，因此先把映射配上去，打开 /etc/hosts，增加内容：
+
+127.0.0.1 api.blog.com
+配置 nginx.conf
+打开 nginx 的配置文件 nginx.conf（我的是 /usr/local/etc/nginx/nginx.conf），我们做了如下事情：
+
+增加 server 片段的内容，设置 server_name 为 api.blog.com 并且监听 8081 端口，将所有路径转发到 http://127.0.0.1:8000/ 下
+
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server {
+        listen       8081;
+        server_name  api.blog.com;
+
+        location / {
+            proxy_pass http://127.0.0.1:8000/;
+        }
+    }
+}
+验证
+启动 go-gin-example
+回到 go-gin-example 的项目下，执行 make，再运行 ./go-gin-exmaple
+
+$ make
+重启 nginx
+$ nginx -t
+ $ nginx -s reload
+ 
+ 配置 nginx.conf
+ 回到 nginx.conf 的老地方，增加负载均衡所需的配置。新增 upstream 节点，设置其对应的 2 个后端服务，最后修改了 proxy_pass 指向（格式为 http:// + upstream 的节点名称）
+ 
+ worker_processes  1;
+ 
+ events {
+     worker_connections  1024;
+ }
+ 
+ 
+ http {
+     include       mime.types;
+     default_type  application/octet-stream;
+ 
+     sendfile        on;
+     keepalive_timeout  65;
+ 
+     upstream api.blog.com {
+         server 127.0.0.1:8001;
+         server 127.0.0.1:8002;
+     }
+ 
+     server {
+         listen       8081;
+         server_name  api.blog.com;
+ 
+         location / {
+             proxy_pass http://api.blog.com/;
+         }
+     }
+ }
+ 重启 nginx
