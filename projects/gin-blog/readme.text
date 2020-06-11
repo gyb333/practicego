@@ -36,4 +36,29 @@ DELETE：http://127.0.0.1:8000/api/v1/articles/1
 我们需要访问http://127.0.0.1:8000/auth?username=test&password=test123456，得到token
 访问http://127.0.0.1:8000/api/v1/articles?token=eyJhbGci...，检查接口返回值
 
+获取到API的Token后，我们故意传错误URL参数给接口，如：http://127.0.0.1:8000/api/v1/articles?tag_id=0&state=9999999&token=
 
+
+http://127.0.0.1:8000/swagger/index.html
+
+根目录下执行 docker build -t gin-blog-docker .
+执行命令 docker run -p 8000:8000 gin-blog-docker
+ docker rmi -f gin-blog-docker
+
+docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=rootroot -d mysql
+
+需要将 Golang 容器和 Mysql 容器关联起来
+执行命令 docker run --link mysql:mysql -p 8000:8000 gin-blog-docker
+
+
+curl --location --request POST 'http://127.0.0.1:8000/upload' \
+--form 'image=@/C:/Users/zhongduzhi/Desktop/分布式.png'
+
+http://localhost:8000/upload/images/
+
+http://127.0.0.1:8000/tags/export
+
+访问 http://127.0.0.01:8000/tags/import
+
+
+二维码：验证通过 POST 方法访问 http://127.0.0.1:8000/api/v1/articles/poster/generate?token=$token（注意 $token）

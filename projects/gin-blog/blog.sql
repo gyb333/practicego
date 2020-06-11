@@ -16,7 +16,8 @@ CREATE TABLE `blog_tag` (
                             PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章标签管理';
 #2、 文章表
-
+#在 blog_article 中增加字段 cover_image_url，格式为 varchar(255) DEFAULT '' COMMENT '封面图片地址'
+drop table  if exists blog_article;
 CREATE TABLE `blog_article` (
                                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                                 `tag_id` int(10) unsigned DEFAULT '0' COMMENT '标签ID',
@@ -29,6 +30,7 @@ CREATE TABLE `blog_article` (
                                 `modified_by` varchar(255) DEFAULT '' COMMENT '修改人',
                                 `deleted_on` int(10) unsigned DEFAULT '0',
                                 `state` tinyint(3) unsigned DEFAULT '1' COMMENT '状态 0为禁用1为启用',
+                                cover_image_url varchar(255) DEFAULT '' COMMENT '封面图片地址',
                                 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章管理';
 #3、 认证表
