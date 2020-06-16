@@ -24,11 +24,6 @@ type Tag struct {
 //}
 
 
-
-
-
-
-
 // AddTag Add a Tag
 func AddTag(name string, state int, createdBy string) error {
 	tag := Tag{
