@@ -15,10 +15,10 @@ import (
 	pb "go-grpc-example/proto" // 引入编译生成的包
 
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	zipkin "github.com/openzipkin/zipkin-go"
 	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
-	"github.com/opentracing/opentracing-go"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -31,8 +31,8 @@ const (
 	// Address gRPC服务地址
 	Address = "127.0.0.1:50052"
 	SERVICE_NAME              = "zipkin_server"
-	ZIPKIN_HTTP_ENDPOINT      = "http://hadoop:9411/api/v1/spans"
-	ZIPKIN_RECORDER_HOST_PORT = "127.0.0.1:9000"
+	ZIPKIN_HTTP_ENDPOINT      = "http://hadoop:9411/api/v2/spans"
+
 )
 
 // 定义helloService并实现约定的接口
@@ -49,6 +49,7 @@ var HelloService = helloService{
 }
 
 func (h helloService) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+
 	if err := h.auth.Check(ctx); err != nil {
 		return nil, err
 	}
@@ -65,14 +66,15 @@ func main() {
 
 	reporter :=  zipkinhttp.NewReporter(ZIPKIN_HTTP_ENDPOINT)
 	defer reporter.Close()
-	endpoint, err := zipkin.NewEndpoint(SERVICE_NAME, ZIPKIN_RECORDER_HOST_PORT)
+	endpoint, err := zipkin.NewEndpoint(SERVICE_NAME, Address)
 	if err != nil {
-		log.Fatalf("unable to create local endpoint: %+v\n", err)
+		grpclog.Fatalf("unable to create local endpoint: %+v\n", err)
 	}
+
 	// initialize our tracer
 	nativeTracer, err := zipkin.NewTracer(reporter, zipkin.WithLocalEndpoint(endpoint))
 	if err != nil {
-		log.Fatalf("unable to create tracer: %+v\n", err)
+		grpclog.Fatalf("unable to create tracer: %+v\n", err)
 	}
 	// use zipkin-go-opentracing to wrap our tracer
 	tracer := zipkinot.Wrap(nativeTracer)
@@ -94,7 +96,7 @@ func main() {
 	}
 	tc, err := tlsServer.GetCredentialsByCA()
 	if err != nil {
-		log.Fatalf("GetTLSCredentialsByCA err: %v", err)
+		grpclog.Fatalf("GetTLSCredentialsByCA err: %v", err)
 	}
 
 

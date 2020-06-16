@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
-	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
-	zipkinot  "github.com/openzipkin-contrib/zipkin-go-opentracing"
+	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	zipkin "github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 
 	"go-grpc-example/logging"
 	"go-grpc-example/pkg/gtls"
@@ -21,7 +21,7 @@ const (
 	Address = "127.0.0.1:50052"
 	SERVICE_NAME              = "zipkin_client"
 	ZIPKIN_HTTP_ENDPOINT      = "http://hadoop:9411/api/v1/spans"
-	ZIPKIN_RECORDER_HOST_PORT = "127.0.0.1:9000"
+
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 
 	reporter :=  zipkinhttp.NewReporter(ZIPKIN_HTTP_ENDPOINT)
 	defer reporter.Close()
-	endpoint, err := zipkin.NewEndpoint(SERVICE_NAME, ZIPKIN_RECORDER_HOST_PORT)
+	endpoint, err := zipkin.NewEndpoint(SERVICE_NAME, Address)
 	if err != nil {
 		log.Fatalf("unable to create local endpoint: %+v\n", err)
 	}
