@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"gin-blog/middleware/cors"
 	"gin-blog/middleware/jwt"
 	"gin-blog/pkg/export"
 	"gin-blog/pkg/qrcode"
@@ -21,6 +22,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
+	// 使用跨域中间件
+	r.Use(cors.Cors())
 
 	gin.SetMode(setting.RunMode)
 	r.StaticFS("/export", http.Dir(export.GetExcelFullPath()))
