@@ -27,7 +27,7 @@ func (c *ExampleController) GetPing() string {
 
 // GetHello 服务
 // 请求方法:   GET
-// 请求资源路径: http://localhost:8080/hello
+// 请求资源路径: http://localhost:8080/hi
 func (c *ExampleController) GetHi() interface{} {
 	return map[string]string{"message": "Hello Iris!"}
 }

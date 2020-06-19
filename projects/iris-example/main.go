@@ -28,10 +28,13 @@ func main() {
 		ctx.View("shared/error.html")
 	})
 
+
+
 	// 注册控制器
 	mvc.New(app.Party("/hello")).Handle(new(controllers.HelloController))
 	mvc.New(app.Party("/visits")).Handle(&globalVisitorsController{visits: 0})
 	mvc.New(app).Handle(new(controllers.ExampleController))
+
 	//您还可以拆分您编写的代码以配置mvc.Application
 	//使用`mvc.Configure`方法，如下所示。
 	mvc.Configure(app.Party("/movies"), movies)
@@ -42,6 +45,8 @@ func main() {
 	mvc.Configure(app.Party("/user"),user)
 
 	mvc.Configure(app.Party("/websocket"), configureMVC)
+
+	go api()
 
 	app.Run(
 		//开启web服务

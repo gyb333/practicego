@@ -49,14 +49,14 @@ func users(app *mvc.Application) {
 
 func user(app *mvc.Application) {
 	// "/user" based mvc application.
-	sessManager := sessions.New(sessions.Config{
+	session := sessions.New(sessions.Config{
 		Cookie:  "sessioncookiename",
 		Expires: 24 * time.Hour,
 	})
 
 	app.Register(
 		userService,
-		sessManager.Start,
+		session.Start,
 	)
 	app.Handle(new(controllers.UserController))
 }

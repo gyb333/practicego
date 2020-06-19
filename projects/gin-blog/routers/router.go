@@ -67,6 +67,9 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/articles/poster/generate", v1.GenerateArticlePoster)
 	}
 
+
+	apis(r)
+
 	return r
 }
 
