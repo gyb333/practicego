@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin-blog/pkg/logging"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -102,10 +103,13 @@ func apis(r *gin.Engine)  {
 		   使用：context.Params().Get("name") 获取正则表达式变量
 		   请求1：http://localhost:8000/api/hello/110
 		*/
-		api.GET("/:name", func(c *gin.Context) {
+		r.LoadHTMLGlob("view/*")
+		api.GET("/hello/:name/*action", func(c *gin.Context) {
 			//获取正则表达式变量内容值
 			name := c.Param("name")
-			c.HTML(http.StatusOK,"<h1> %s </h1>",name)
+			action := c.Param("action")
+			action = strings.Trim(action, "/")
+			c.HTML(http.StatusOK,"index.html",gin.H{"title": "gin学习 "+action,"name": name})
 		})
 		/* 2、自定义正则表达式变量路由请求 {unit64:uint64}进行变量类型限制
 		GET: http://localhost:8000/api/uint/10

@@ -8,12 +8,14 @@ import (
 	"gin-blog/pkg/upload"
 	"gin-blog/routers/api"
 	v1 "gin-blog/routers/api/v1"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
+
+	"gin-blog/pkg/setting"
+	"github.com/gin-contrib/sessions"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
-
-	"gin-blog/pkg/setting"
 )
 
 func InitRouter() *gin.Engine {
@@ -34,8 +36,48 @@ func InitRouter() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.POST("/upload", api.UploadImage)
 
-	r.GET("/test", Test )
+	r.GET("/cookie", myCookie )
 
+	//// 创建基于cookie的存储引擎，secret 参数是用于加密的密钥
+	//store := cookie.NewStore([]byte("secret"))
+	//// 设置session中间件，参数mysession，指的是session的名字，也是cookie的名字
+	//r.Use(sessions.Sessions("mySession", store))
+
+	store, _ := redis.NewStore(10, "tcp", "hadoop:6379", "", []byte("secret"))
+	r.Use(sessions.Sessions("mySession", store))
+
+	r.GET("/session", func(c *gin.Context) {
+		// 初始化session对象
+		session := sessions.Default(c)
+		// 通过session.Get读取session值 session是键值对格式数据，因此需要通过key查询数据
+		if session.Get("SessionID") != "gyb333" {
+			// 设置session数据
+			session.Set("SessionID", "gyb333")
+			// 删除session数据
+			session.Delete("tizi365")
+			// 保存session数据
+			session.Save()
+			// 删除整个session
+			// session.Clear()
+		}
+
+		c.JSON(200, gin.H{"hello": session.Get("SessionID")})
+	})
+
+	r.GET("/incr", func(c *gin.Context) {
+		session := sessions.Default(c)
+		var count int
+		v := session.Get("count")
+		if v == nil {
+			count = 0
+		} else {
+			count = v.(int)
+			count++
+		}
+		session.Set("count", count)
+		session.Save()
+		c.JSON(200, gin.H{"count": count})
+	})
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())
 	{
@@ -76,7 +118,15 @@ func InitRouter() *gin.Engine {
 // @Summary 测试
 // @Produce  json
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/Test [get]
-func Test(c *gin.Context) {
-	c.JSON(200, gin.H{"code":200,"data":"Hello world!","msg":"ok"})
+// @Router /api/cookie [get]
+func myCookie(c *gin.Context) {
+	// 根据cookie名字读取cookie值
+	data, err := c.Cookie("my_cookie")
+	if err != nil {
+		data="cookie_value"
+		//Secure=true，那么这个cookie只能用https协议发送给服务器
+		//通过将cookie的MaxAge设置为-1, 达到删除cookie的目的。
+		c.SetCookie("my_cookie",data,3600,"/","localhost",false,true)
+	}
+	c.JSON(200, gin.H{"code":200,"data":"Hello world!","msg":data+" ok"})
 }

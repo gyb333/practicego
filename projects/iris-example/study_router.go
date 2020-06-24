@@ -6,12 +6,94 @@ import (
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
+	"github.com/kataras/iris/sessions"
 )
 
 func api()  {
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
+
+	/**
+	 * 路由组请求
+	 */
+	usersRouter := app.Party("/user", func(context context.Context) {
+		// 处理下一级请求
+		context.Next()
+	})
+
+	//Done：
+	usersRouter.Done(func(context context.Context) {
+		context.Application().Logger().Infof("response sent to " + context.Path())
+	})
+	usersRouter.Get("/info", func(context context.Context) {
+		context.HTML("<h1> 用户信息 </h1>")
+		context.Next()// 手动显示调用,Done会被调用
+	})
+	//1、创建session并进行使用
+	sess := sessions.New(sessions.Config{
+		Cookie: "mySessionID",
+	})
+
+	usersRouter.Get("/query", func(context context.Context) {
+		path := context.Path()
+		app.Logger().Info(" 查询信息 path :", path)
+		session := sess.Start(context)
+
+		isLogin, err := session.GetBoolean("ISLOGIN")
+		if err != nil {
+			context.WriteString("账户未登录,请先登录 ")
+			return
+		}
+		if isLogin {
+			app.Logger().Info(" 账户已登录 ")
+			context.WriteString("账户已登录")
+		} else {
+			app.Logger().Info(" 账户未登录 ")
+			context.WriteString("账户未登录")
+		}
+	})
+
+
+
+	/**
+	 * 用户登录功能
+	 */
+	usersRouter.Post("/login", func(context context.Context) {
+		path := context.Path()
+		app.Logger().Info(" 请求Path：", path)
+		userName := context.PostValue("name")
+		passwd := context.PostValue("pwd")
+
+		session := sess.Start(context)
+		if userName == "gyb333" && passwd == "pwd123" {
+			//用户名
+			session.Set("USERNAME", userName)
+
+			//登录状态
+			session.Set("ISLOGIN", true)
+
+			context.WriteString("账户登录成功 ")
+
+		} else {
+			session := sess.Start(context)
+			session.Set("ISLOGIN", false)
+			context.WriteString("账户登录失败，请重新尝试")
+		}
+	})
+	/**
+	 * 用户退出登录功能
+	 */
+	app.Get("/logout", func(context context.Context) {
+		path := context.Path()
+		app.Logger().Info(" 退出登录 Path :", path)
+		session := sess.Start(context)
+		//删除session
+		session.Delete("ISLOGIN")
+		session.Delete("USERNAME")
+		context.WriteString("退出登录成功")
+	})
+
 
 	//GET请求: http://localhost:8000/api/getPath?name=davie&age=123 Body:none
 	app.Get("/api/getPath", func(context context.Context) {
@@ -179,6 +261,9 @@ func api()  {
 		//正则表达式所支持的数据类型
 		context.Params()
 	})
+
+
+
 
 
 
