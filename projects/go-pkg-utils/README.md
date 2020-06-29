@@ -38,8 +38,9 @@ docker exec -it zkMaster /bin/bash
 
 docker run -it --rm \
         --net network \
-        zookeeper zkCli.sh -server zkMaster:2181,zkSecod:2181,zkSlave:2181   
-        
+        zookeeper zkCli.sh -server zkMaster:2181,zkSecod:2181,zkSlave:2181  
+         
+rmr /brokers/topics/<topic_name>        
          
 docker 安装kafka
 ocker pull wurstmeister/kafka
@@ -48,7 +49,7 @@ ocker pull wurstmeister/kafka
 docker run -d --name kafka --publish 9092:9092 \
 --net network \
 --env KAFKA_ZOOKEEPER_CONNECT=zkMaster:2181,zkSecond:2181,zkSlave:2181 \
---env KAFKA_ADVERTISED_HOST_NAME=hadoop \
+--env KAFKA_ADVERTISED_HOST_NAME=192.168.56.100 \
 --env KAFKA_ADVERTISED_PORT=9092  \
 --volume /etc/localtime:/etc/localtime \
 wurstmeister/kafka    
@@ -57,14 +58,17 @@ wurstmeister/kafka
 docker exec -it kafka /bin/bash
 cd opt/kafka
 //创建topic
-bin/kafka-topics.sh --create --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181  --replication-factor 1 --partitions 1 --topic mykafka
+bin/kafka-topics.sh --create --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181  --replication-factor 1 --partitions 1 --topic gyb
 bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test
 //查看topic
 bin/kafka-topics.sh --list --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181 
 bin/kafka-topics.sh --list --bootstrap-server localhost:9092
 //创建生产者
-bin/kafka-console-producer.sh --broker-list kafka:9092 --topic mykafka 
+bin/kafka-console-producer.sh --broker-list kafka:9092 --topic gyb 
 bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test
 //创建消费者
-bin/kafka-console-consumer.sh --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181  --topic mykafka --from-beginning
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gyb --from-beginning
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+bin/kafka-topics.sh  --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181 --delete --topic gyb
+
