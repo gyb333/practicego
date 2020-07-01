@@ -5,6 +5,7 @@ go 1.14
 require (
 	GYB.Common v0.0.0-incompatible
 	github.com/Shopify/sarama v1.26.4
+	github.com/apache/rocketmq-client-go/v2 v2.0.0
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/garyburd/redigo v1.6.0
 	github.com/onsi/ginkgo v1.13.0 // indirect

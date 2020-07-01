@@ -1,5 +1,20 @@
 go mod init go-pkg-utils
 
+docker ps -a    查看docker容器内的ID
+docker inspect id 查看网络信息
+解决方法：
+　　1. 首先要保证在虚拟机中能够连接到Docker容器中，用ping测试是否通畅
+　　2. 关闭虚拟中的防火墙： systemctl stop firewalld.service
+　　3. 打开宿主机（windows）的cmd,在其中添加通往192.168.1.0/24网络的路由。
+　　通往192.168.1.0/24网络的数据包由172.20.1.12来转发
+    route add 192.168.1.0 mask 255.255.255.0 172.20.1.12
+    
+在Windows宿主机中连接虚拟机中的Docker容器
+route add -p 172.20.0.0 mask 255.255.255.0 192.168.56.100
+#route delete 172.20.0.0
+route print 172.20.0.0
+ping 172.20.0.1
+
 docker run -di --name=redis -v  /usr/local/docker/redis/redis.conf:/usr/redis/redis.conf \
 -v /usr/local/docker/redis/data:/data \
 -p 6379:6379 redis redis-server /usr/redis/redis.conf
@@ -71,4 +86,17 @@ bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gyb --fr
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
 
 bin/kafka-topics.sh  --zookeeper zkMaster:2181,zkSecond:2181,zkSlave:2181 --delete --topic gyb
+
+docker 安装RocketMQ
+
+docker-compose.yml 当前目录下运行:
+COMPOSE_PROJECT_NAME=RocketMQ docker-compose  up -d
+RocketMQ 控制台
+默认访问 http://rmqIP:8080 登入控制台 
+http://hadoop:8888
+
+
+COMPOSE_PROJECT_NAME=hadoop docker-compose  up -d
+docker inspect id 查看网络信息
+route add -p 172.23.0.0 mask 255.255.255.0 192.168.56.100
 
