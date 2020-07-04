@@ -30,12 +30,13 @@ func OrderedProducer ()  {
 	}
 	tags := []string{"TagA", "TagB", "TagC", "TagD", "TagE"};
 	for i := 0; i < 100; i++  {
-		 //orderId := i % 10;
+		 orderId := i % 10;
 		msg := &primitive.Message{
 			Topic: "study" /* Topic */,
 			Body:  []byte("Hello RocketMQ Go Client! " + strconv.Itoa(i)),
 		}
-		msg=msg.WithTag(tags[i %len(tags)]).WithKeys([]string{"KEY"+  strconv.Itoa(i)})
+		msg=msg.WithTag(tags[i %len(tags)]).WithKeys([]string{"KEY"+  strconv.Itoa(i)}).
+			WithShardingKey(strconv.Itoa(orderId))/*orderID*/
 		res, err := p.SendSync(context.Background(), msg)
 		if err != nil {
 			log.Printf("send message error: %s\n", err)
