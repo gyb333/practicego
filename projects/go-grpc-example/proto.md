@@ -1,6 +1,9 @@
 安装protoc-gen-go
 go get -u github.com/golang/protobuf/protoc-gen-go
 
+#降级protoc-gen-go的版本 
+git -C D:/Go/src/github.com/golang/protobuf checkout v1.2.0
+
 编译生成protoc-gen-go
 cd D:\Go\src\github.com\golang\protobuf\protoc-gen-go
  go build  

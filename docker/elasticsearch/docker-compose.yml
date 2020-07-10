@@ -1,0 +1,70 @@
+version: '3'
+services:
+     esMaster:
+       image:  elasticsearch:6.5.4
+       container_name: esMaster
+       restart: always
+       volumes:
+         - ./Master/data:/usr/share/elasticsearch/data:rw
+         - ./Master/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+         - ./Master/logs:/user/share/elasticsearch/logs:rw
+       environment:
+         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+       command: elasticsearch
+       ports:
+         - "9200:9200"
+         - "9300:9300"
+       networks:
+          default:
+            ipv4_address: 172.23.0.14
+     esSecond:
+       image:  elasticsearch:6.5.4
+       container_name: esSecond
+       restart: always
+       volumes:
+         - ./Second/data:/usr/share/elasticsearch/data:rw
+         - ./Second/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+         - ./Second/logs:/user/share/elasticsearch/logs:rw
+       environment:
+         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+       command: elasticsearch
+       ports:
+         - "9201:9200"
+         - "9301:9300"
+       networks:
+          default:
+            ipv4_address: 172.23.0.15
+     esSlave:
+       image:  elasticsearch:6.5.4
+       container_name: esSlave
+       restart: always
+       volumes:
+         - ./Slave/data:/usr/share/elasticsearch/data:rw
+         - ./Slave/conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+         - ./Slave/logs:/user/share/elasticsearch/logs:rw
+       environment:
+         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+       command: elasticsearch
+       ports:
+         - "9202:9200"
+         - "9302:9300"
+       networks:
+          default:
+            ipv4_address: 172.23.0.16
+     esHead:
+       image: tobias74/elasticsearch-head:6
+       container_name: esHead
+       restart: always
+       volumes:
+         - ./esHead/Gruntfile.js:/usr/src/app/Gruntfile.js
+         - ./esHead/app.js:/usr/src/app/_site/app.js  
+       ports:
+         - "9100:9100"
+       networks:
+          default:
+            ipv4_address: 172.23.0.10    
+
+networks:
+  default:
+    external:
+      name: network

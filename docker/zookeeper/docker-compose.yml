@@ -1,0 +1,57 @@
+version: '3.7'
+services:
+    zkMaster:
+        image: zookeeper
+        restart: always
+        hostname: zkMaster
+        container_name: zkMaster
+        ports:
+            - "2181:2181"
+        volumes:
+            - ./zkMaster/data:/data
+            - ./zkMaster/datalog:/datalog
+            - ./zkMaster/conf:/conf
+        environment:
+            ZOO_MY_ID: 1
+            ZOO_SERVERS: server.1=zkMaster:2888:3888 server.2=zkSecond:2888:3888 server.3=zkSlave:2888:3888 clientPort=2181
+        networks:
+          default:
+            ipv4_address: 172.23.0.11
+    zkSecond:
+        image: zookeeper
+        restart: always
+        hostname: zkSecond
+        container_name: zkSecond
+        ports:
+            - "2182:2181"
+        volumes:
+            - ./zkSecond/data:/data
+            - ./zkSecond/datalog:/datalog
+            - ./zkSecond/conf:/conf
+        environment:
+            ZOO_MY_ID: 2
+            ZOO_SERVERS: server.1=zkMaster:2888:3888 server.2=zkSecond:2888:3888 server.3=zkSlave:2888:3888 clientPort=2181
+        networks:
+          default:
+            ipv4_address: 172.23.0.12
+    zkSlave:
+        image: zookeeper
+        restart: always
+        hostname: zkSlave
+        container_name: zkSlave
+        ports:
+            - "2183:2181"
+        volumes:
+            - ./zkSlave/data:/data
+            - ./zkSlave/datalog:/datalog
+            - ./zkSlave/conf:/conf
+        environment:
+            ZOO_MY_ID: 3
+            ZOO_SERVERS: server.1=zkMaster:2888:3888 server.2=zkSecond:2888:3888 server.3=zkSlave:2888:3888 clientPort=2181
+        networks:
+          default:
+            ipv4_address: 172.23.0.13
+networks:
+  default:
+    external:
+      name: network

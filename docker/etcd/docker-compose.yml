@@ -1,0 +1,85 @@
+version: '3.7' 
+
+services:
+  etcd-node1:
+    image: elcolio/etcd
+    container_name: etcd-node1
+    ports:
+      - 12379:2379
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd-node1
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.23.0.20:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.23.0.20:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+      - ETCD_INITIAL_CLUSTER=etcd-node1=http://172.23.0.20:2380,etcd-node2=http://172.23.0.21:2380,etcd-node3=http://172.23.0.22:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+    networks:
+      network:
+        ipv4_address: 172.23.0.20
+  etcd-node2:
+    image: elcolio/etcd
+    container_name: etcd-node2
+    ports:
+      - 22379:2379
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd-node2
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.23.0.21:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.23.0.21:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+      - ETCD_INITIAL_CLUSTER=etcd-node1=http://172.23.0.20:2380,etcd-node2=http://172.23.0.21:2380,etcd-node3=http://172.23.0.22:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+    networks:
+      network:
+        ipv4_address: 172.23.0.21
+  etcd-node3:
+    image: elcolio/etcd
+    container_name: etcd-node3
+    ports:
+      - 32379:2379
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd-node3
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.23.0.22:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.23.0.22:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+      - ETCD_INITIAL_CLUSTER=etcd-node1=http://172.23.0.20:2380,etcd-node2=http://172.23.0.21:2380,etcd-node3=http://172.23.0.22:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+    networks:
+      network:
+        ipv4_address: 172.23.0.22
+  etcdkeeper:
+    image: deltaprojects/etcdkeeper
+    container_name: etcdkeeper
+    restart: always
+    ports:
+      - "18080:8080"
+    networks:
+      network:
+        ipv4_address: 172.23.0.23    
+  etcd-browser:
+    image: buddho/etcd-browser
+    container_name: etcd-browser
+    restart: always
+    ports:
+      - "18000:8000"
+    environment:
+      - ETCD_HOST=172.23.0.20
+      - ETCD_PORT=2379
+    networks:
+      network:
+        ipv4_address: 172.23.0.24  
+networks:
+  network:
+    external: true
+    name: network
+  #rmq:
+    #name: rmq
+    #driver: bridge
