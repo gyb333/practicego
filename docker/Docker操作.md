@@ -1,3 +1,10 @@
+#查看进程，发现相关的容器并没有在运行，而 docker-proxy 却依然绑定着端口：
+#docker  ps -aux  | grep docker-proxy
+#service docker stop
+#rm /var/lib/docker/network/files/local-kv.db
+#service docker start
+
+
 docker中 启动所有的容器命令
 docker start $(docker ps -a | awk '{ print $1}' | tail -n +2)
 
@@ -13,8 +20,8 @@ docker rmi $(docker images | awk '{print $3}' |tail -n +2)
 //检查网络
 docker network ls
 新建网络
-docker network create --driver bridge --subnet 172.23.0.0/25 --gateway 172.23.0.1  zookeeper_network
-
+docker network create --driver bridge --subnet 172.23.0.0/25 --gateway 172.23.0.1  network
+ 
 
 docker ps -a    查看docker容器内的ID
 docker inspect id 查看网络信息
@@ -26,10 +33,21 @@ docker inspect id 查看网络信息
     route add 192.168.1.0 mask 255.255.255.0 172.20.1.12
     
 在Windows宿主机中连接虚拟机中的Docker容器
-route add -p 172.20.0.0 mask 255.255.255.0 192.168.56.100
-#route delete 172.20.0.0
-route print 172.20.0.0
-ping 172.20.0.1
+route add -p 172.23.0.0 mask 255.255.255.0 192.168.56.100
+#route delete 172.23.0.0
+route print 172.23.0.0
+ping 172.23.0.1
+需要中间192.168.56.100机器开启IP路由转发功能
+要把B机器上的IP转发功能打开，临时的打开方法是“echo 1 > /proc/sys/net/ipv4/ip_forward”，永久的修改，需要修改/etc/sysctl.conf文件。
+#vi /etc/sysctl.conf
+#net.ipv4.ip_forward=1 
+sysctl –p
+init 6 
+iptables -L
+如果192.168.56.100是windows服务器,IP Forwarding打开
+#reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v IPEnableRouter
+#reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters /v IPEnableRouter /t REG_DWORD /d 1 /f
+   
 
 docker run -di --name=redis --restart=always -v  /usr/local/docker/redis/redis.conf:/usr/redis/redis.conf \
 -v /usr/local/docker/redis/data:/data \
@@ -67,22 +85,11 @@ Slave_SQL_Running: Yes
 #create database test;
 #SET FOREIGN_KEY_CHECKS=0;
 
--- ----------------------------
--- Table structure for course
--- ----------------------------
-DROP TABLE IF EXISTS `course`;
-CREATE TABLE `course` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
-  `lesson_period` double(5,0) DEFAULT NULL,
-  `score` double(10,0) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
  
 docker 安装zookeeper集群
 
 // 校验配置文件，不打印
-$ docker-compose -f zookeeper-compose.yml config -q
+#docker-compose -f zookeeper-compose.yml config -q
 
 docker-compose.yml 当前目录下运行:
 
@@ -152,6 +159,7 @@ docker inspect id 查看网络信息
 route add -p 172.23.0.0 mask 255.255.255.0 192.168.56.100
 
 
+
 docker network create --driver bridge --subnet 172.23.0.0/25 --gateway 172.23.0.1  network
 
 
@@ -193,7 +201,7 @@ etcdctl watch key -forever
 docker run -it -d --name etcdkeeper \
 --net network --ip 172.23.0.50  -p 18080:8080 \
 deltaprojects/etcdkeeper
-访问http://hadoop:18080/etcdkeeper/，输入etcd的地址,看到如下界面
+访问http://gyb333:18080/etcdkeeper/，输入etcd的地址,看到如下界面
 
 
 go的etcd v3安装包
@@ -208,5 +216,5 @@ docker run -itd --name etcd-browser \
 --env ETCD_HOST=172.23.0.20 \
 --env ETCD_PORT=2379 \
 buddho/etcd-browser
-运行后访问http://hadoop:18000/
+运行后访问http://gyb333:18000/
 
