@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -94,7 +95,7 @@ func generatorRun()  {
 	}()
 
 	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, os.Interrupt,syscall.SIGINT,syscall.SIGTERM)
 	<- quit
 
 	log.Println("Shutdown Server ...")

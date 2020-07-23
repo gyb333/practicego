@@ -1,4 +1,4 @@
-package sync_base
+package pubsub
 
 import (
 	"sync"

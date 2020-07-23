@@ -1,12 +1,13 @@
-package sync_base_test
+package pubsub
 
 import (
-	. "../sync_base"
 	"fmt"
 	"strings"
 	"testing"
 	"time"
 )
+
+
 
 func TestProducerConsumer(t *testing.T) {
 	ch := make(chan int, 64) // 成果队列
