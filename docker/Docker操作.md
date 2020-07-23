@@ -34,6 +34,7 @@ docker inspect id 查看网络信息
     
 在Windows宿主机中连接虚拟机中的Docker容器
 route add -p 172.23.0.0 mask 255.255.255.0 192.168.56.100
+route add -p 172.23.0.0 mask 255.255.255.0 169.254.23.215
 #route delete 172.23.0.0
 route print 172.23.0.0
 ping 172.23.0.1
@@ -157,7 +158,7 @@ http://hadoop:8888
  
 docker inspect id 查看网络信息
 route add -p 172.23.0.0 mask 255.255.255.0 192.168.56.100
-
+route add -p 172.23.0.0 mask 255.255.255.0 169.254.23.215
 
 
 docker network create --driver bridge --subnet 172.23.0.0/25 --gateway 172.23.0.1  network
@@ -194,9 +195,10 @@ ETCDENDPOINTS=127.23.0.20:2379,127.23.0.21:2379,127.23.0.22:2379
 etcdctl member list
 etcdctl set /cqh muscle
 etcdctl watch key -forever
+#docker exec -t etcd-node1  etcdctl --endpoints=http://127.23.0.20:2379 set lmh "lmh1"
 
 #docker exec -t etcd-node1 etcdctl exec-watch key -- sh -c 'pwd'
-#docker exec -t etcd-node1 etcdct cluster-health
+#docker exec -t etcd-node1 etcdctl cluster-health
 
 docker run -it -d --name etcdkeeper \
 --net network --ip 172.23.0.50  -p 18080:8080 \
