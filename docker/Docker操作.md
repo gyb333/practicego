@@ -220,3 +220,33 @@ docker run -itd --name etcd-browser \
 buddho/etcd-browser
 运行后访问http://gyb333:18000/
 
+
+安装keepalived：yum install keepalived
+systemctl enable keepalived # 开机自启动
+systemctl start keepalived     # 启动
+systemctl stop keepalived     # 暂停
+systemctl restart keepalived  # 重启
+systemctl status keepalived   # 查看状态  
+tail -f /var/log/messages
+
+docker pause  nginx_master
+
+构建centos镜像：yum install bind bind-utils -y
+docker build -t gyb333/centos .
+
+安装DNS服务器
+docker exec -it dns_master /bin/bash
+连接外网：
+vi /etc/resolv.conf
+nameserver 119.29.29.29
+nameserver 114.114.114.114
+解决Failed to set locale, defaulting to C.UTF-8：
+  echo "export LC_ALL=en_US.UTF8" >> /etc/profile 
+  source /etc/profile
+  
+systemctl enable named
+systemctl start named
+dig masterdns.gyb333.com
+
+nslookup masterdns.gyb333.com
+host masterdns.gyb333.com

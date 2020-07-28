@@ -1,10 +1,10 @@
 package sort_test
 
 import (
-	"../sort"
 	"math/rand"
 	"testing"
 	"time"
+	"algorithm/sort"
 )
 
 const length =10000

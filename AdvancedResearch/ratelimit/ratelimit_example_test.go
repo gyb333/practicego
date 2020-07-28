@@ -31,11 +31,12 @@ func TestLeakybucket(t *testing.T) {
 	}
 	log.Printf("bucket capacity:%v", b.Capacity())
 }
+
 func TestUber(t *testing.T)  {
-	// rate limit: token-bucket
+//https://github.com/uber-go/ratelimit
 	rl := ratelimit.New(100) // per second
 	prev := time.Now()
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1000; i++ {
 		now := rl.Take()
 		if i > 0 {
 			fmt.Println(i, now.Sub(prev))
@@ -44,6 +45,7 @@ func TestUber(t *testing.T)  {
 	}
 }
 func TestRate(t *testing.T)  {
+	// rate limit: token-bucket
 	l := rate.NewLimiter(2, 5)
 	ctx := context.Background()
 	start := time.Now()
