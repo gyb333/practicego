@@ -53,3 +53,20 @@ import _ "GinHello/src/docs"
 http://localhost:8080/swagger/index.html
 
 GOPROXY=https://goproxy.cn,direct
+
+1万的并发在关键节点使用内存处理也很容易，
+百万并发就需要linux内核调优，socket缓冲区，文件句柄数，内存池，RPS/RFS SMP等优化也可以达到。
+千万并发就需要考虑用户态协议dpdk了
+
+
+  yongboy的100万并发连接服务器笔记
+    老生常谈: ulimit问题及其影响
+    Linux下高并发socket最大连接数所受的各种限制
+    Http长连接200万尝试及调优
+    千万级并发实现的秘密：内核不是解决方案，而是问题所在！
+    Linux Tuning
+    LINUX性能调优方法总结
+    Linux Kernel Tuning for C500k
+    为高负载网络优化 Nginx 和 Node.js
+    Node.js w/1M concurrent connections!
+    零零散散整理的一些linux内核参数和说明

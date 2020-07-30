@@ -232,6 +232,7 @@ tail -f /var/log/messages
 docker pause  nginx_master
 
 构建centos镜像：yum install bind bind-utils -y
+docker build -t gyb333/dns .
 docker build -t gyb333/centos .
 
 安装DNS服务器
@@ -240,6 +241,7 @@ docker exec -it dns_master /bin/bash
 vi /etc/resolv.conf
 nameserver 119.29.29.29
 nameserver 114.114.114.114
+
 解决Failed to set locale, defaulting to C.UTF-8：
   echo "export LC_ALL=en_US.UTF8" >> /etc/profile 
   source /etc/profile
@@ -250,3 +252,13 @@ dig masterdns.gyb333.com
 
 nslookup masterdns.gyb333.com
 host masterdns.gyb333.com
+
+
+docker exec -it lvs01 /bin/bash
+ipvsadm -Ln
+
+docker exec -it resty01 /bin/bash
+docker exec -it resty02 /bin/bash
+ipvsadm -Ln
+systemctl enable keepalived
+systemctl start keepalived

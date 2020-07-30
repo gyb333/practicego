@@ -1,0 +1,38 @@
+version: "3.7"
+services:
+    dns_master:
+      image: gyb333/dns
+      restart: always
+      container_name: dns_master
+      hostname: dns_master
+      privileged: true
+      tty: true
+      dns: 172.23.0.51
+      volumes:
+        - ./dns_master/named.conf:/etc/named.conf
+        - ./dns_master/forward.gyb333:/var/named/forward.gyb333
+        - ./dns_master/reverse.gyb333:/var/named/reverse.gyb333
+      networks:
+        network:
+         ipv4_address: 172.23.0.51
+    dns_slave:
+      image: gyb333/dns
+      restart: always
+      container_name: dns_slave
+      hostname: dns_slave
+      privileged: true
+      tty: true
+      dns:
+        - 172.23.0.51
+        - 172.23.0.52
+      volumes:
+        - ./dns_slave/named.conf:/etc/named.conf
+        #- ./dns_slave/forward.gyb333:/var/named/forward.gyb333
+        #- ./dns_slave/reverse.gyb333:/var/named/reverse.gyb333
+      networks:
+        network:
+         ipv4_address: 172.23.0.52
+networks:
+  network:
+    external:
+      name: network

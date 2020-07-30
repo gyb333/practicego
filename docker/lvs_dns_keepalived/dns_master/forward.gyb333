@@ -1,0 +1,14 @@
+$TTL  86400
+@ IN SOA  masterdns.gyb333.com. root.gyb333.com. (
+    2019011201  ;Serial
+    3600        ;Refresh
+    1800        ;Retry
+    64800       ;Expire
+    86400       ;Minimum TTL
+)
+@       IN NS   masterdns.gyb333.com.
+@       IN NS   slavedns.gyb333.com.
+@       IN A    172.23.0.51
+@       IN A    172.23.0.52
+masterdns       IN A    172.23.0.51
+slavedns        IN A    172.23.0.52

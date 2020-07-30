@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+  nginx_master:
+    #image: nginx
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    restart: always
+    hostname: nginx_master
+    container_name: nginx_master
+    volumes:
+      - ./index-master.html:/usr/share/nginx/html/index.html
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico
+      - ./keepalived-master.conf:/etc/keepalived/keepalived.conf
+    networks:
+        default:
+          ipv4_address: 172.23.0.41
+    cap_add: 
+      - NET_ADMIN
+  nginx_slave:
+    #image: nginx
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    restart: always
+    hostname: nginx_slave
+    container_name: nginx_slave
+    volumes:
+      - ./index-slave.html:/usr/share/nginx/html/index.html
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico
+      - ./keepalived-slave.conf:/etc/keepalived/keepalived.conf
+    networks:
+        default:
+          ipv4_address: 172.23.0.42
+    cap_add: 
+        - NET_ADMIN
+  proxy:
+    image: haproxy
+    ports:
+      - 8000:6301
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+        default:
+          ipv4_address: 172.23.0.44
+
+networks:
+  default:
+    external:
+      name: network

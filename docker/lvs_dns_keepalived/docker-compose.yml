@@ -1,0 +1,98 @@
+version: "3.7"
+services:
+    dns_master:
+      image: gyb333/centos
+      restart: always
+      container_name: dns_master
+      hostname: dns_master
+      privileged: true
+      tty: true
+      dns: 172.23.0.51
+      volumes:
+        - ./dns_master/named.conf:/etc/named.conf
+        - ./dns_master/forward.gyb333:/var/named/forward.gyb333
+        - ./dns_master/reverse.gyb333:/var/named/reverse.gyb333
+      networks:
+        network:
+         ipv4_address: 172.23.0.51
+    dns_slave:
+      image: gyb333/centos
+      restart: always
+      container_name: dns_slave
+      hostname: dns_slave
+      privileged: true
+      tty: true
+      dns:
+        - 172.23.0.51
+        - 172.23.0.52
+      volumes:
+        - ./dns_slave/named.conf:/etc/named.conf
+      networks:
+        network:
+         ipv4_address: 172.23.0.52
+    lvs01:
+      image: gyb333/centos
+      restart: always
+      container_name: lvs01
+      hostname: lvs01
+      privileged: true
+      dns:
+         - 172.23.0.51
+         - 172.23.0.52
+      volumes:
+        - ./lvs01/:/etc/keepalived/
+      networks:
+        network:
+         ipv4_address: 172.23.0.53
+    lvs02:
+      image: gyb333/centos
+      restart: always
+      container_name: lvs02
+      hostname: lvs02
+      privileged: true
+      dns:
+         - 172.23.0.51
+         - 172.23.0.52
+      volumes:
+        - ./lvs02/:/etc/keepalived/
+      networks:
+        network:
+         ipv4_address: 172.23.0.54
+    resty01:
+      image: openresty/openresty
+      restart: always
+      container_name: resty01
+      hostname: resty01
+      privileged: true
+      expose:
+        - "80"
+      dns:
+         - 172.23.0.51
+         - 172.23.0.52
+      volumes:
+        - ./resty01/nginx.conf:/usr/local/nginx.conf
+        - ./rs.sh:/usr/local/rs.sh
+      networks:
+        network:
+         ipv4_address: 172.23.0.55
+    resty02:
+      image: openresty/openresty
+      restart: always
+      container_name: resty02
+      hostname: resty02
+      privileged: true
+      expose:
+        - "80"
+      dns:
+         - 172.23.0.51
+         - 172.23.0.52
+      volumes:
+        - ./resty02/nginx.conf:/usr/local/nginx.conf
+        - ./rs.sh:/usr/local/rs.sh
+      networks:
+        network:
+         ipv4_address: 172.23.0.56
+networks:
+  network:
+    external:
+      name: network
