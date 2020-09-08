@@ -17,7 +17,7 @@ func NewSemaphore(max int) *semaphore  {
 	}
 }
 
-func (s *semaphore) Value() int {
+func (s *semaphore) Values() int {
 	s.L.Lock()
 	defer s.L.Unlock()
 	return s.value

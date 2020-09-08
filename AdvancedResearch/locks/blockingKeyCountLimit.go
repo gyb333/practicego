@@ -17,12 +17,12 @@ func NewBlockingKeyCountLimit(n int) *blockingKeyCountLimit{
 	}
 }
 
-func (bl *blockingKeyCountLimit) ValueSum() int{
+func (bl *blockingKeyCountLimit) Values() int{
 	bl.RLock()
 	defer bl.RUnlock()
 	all:=0
 	for _,v:=range bl.current{
-		all+=v.Value()
+		all+=v.Values()
 	}
 	return all
 }
