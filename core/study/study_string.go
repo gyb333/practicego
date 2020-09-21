@@ -13,8 +13,8 @@ import (
 
 func StudyString() {
 
-	basicString()
-	//stringStruct()
+	//basicString()
+	stringStruct()
 	//stringToByteSlice()
 	//stringToRuneSlice()
 	//stringJoin()
@@ -52,9 +52,10 @@ func stringStruct() {
 	bs := (*[15]byte)(p)
 	fmt.Printf("%p,%v,%s,%c\n", unsafe.Pointer(bs), *bs, *bs, bs[0])
 	for i,v:=range bs{
-		fmt.Println(i,v)		//字符串底層數組不能修改
+		//fmt.Println(i,v)		//字符串底層數組不能修改
+		bs[i]=v+1
 	}
-
+	fmt.Println(str)
 
 
 
