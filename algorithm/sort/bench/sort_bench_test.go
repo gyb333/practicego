@@ -1,7 +1,7 @@
 package bench_test
 
 import (
-	"../../sort"
+	"algorithm/sort"
 	"math/rand"
 	"testing"
 	"time"
