@@ -31,12 +31,10 @@ require (
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20200427203606-3cfed13b9966 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	go.etcd.io/bbolt v1.3.5 // indirect
-	go.etcd.io/etcd v3.3.22+incompatible // indirect
 	go.uber.org/zap v1.15.0 // indirect
-	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7
+	golang.org/x/net v0.7.0
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
 	google.golang.org/grpc v1.29.1
-	google.golang.org/protobuf v1.23.0 // indirect
 	gopkg.in/olivere/elastic.v5 v5.0.85
 	sigs.k8s.io/yaml v1.2.0 // indirect
 
