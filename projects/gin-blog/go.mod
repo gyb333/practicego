@@ -23,7 +23,7 @@ require (
 	github.com/unknwon/com v1.0.1
 	golang.org/x/image v0.0.0-20200609002522-3f4726a040e8 // indirect
 	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7 // indirect
-	golang.org/x/sys v0.0.0-20200519105757-fe76b779f299 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 
