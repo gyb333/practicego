@@ -9,7 +9,7 @@ require (
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.4.5
 	github.com/openzipkin/zipkin-go v0.2.1
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+	golang.org/x/net v0.7.0
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.24.0
 )
